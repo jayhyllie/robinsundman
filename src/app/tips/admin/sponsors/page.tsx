@@ -18,7 +18,7 @@ export default function SponsorsAdminPage() {
   const update = api.tips.sponsorUpdate.useMutation();
   const remove = api.tips.sponsorDelete.useMutation();
 
-  const [expanded, setExpanded] = useState<string | "new" | null>("new");
+  const [expanded, setExpanded] = useState<string | null>("new");
   const [name, setName] = useState("");
   const [campaignText, setCampaignText] = useState("");
   const [primaryColor, setPrimaryColor] = useState("#ffd700");
@@ -146,7 +146,9 @@ export default function SponsorsAdminPage() {
               <div className="min-w-0 flex-1">
                 <p className="tips-display text-2xl">{s.name}</p>
                 <p className="truncate text-xs text-[var(--tips-muted)]">
-                  {s.campaignText || "No campaign text"}
+                  {s.campaignText && s.campaignText.length > 0
+                    ? s.campaignText
+                    : "No campaign text"}
                 </p>
               </div>
               <span className="text-xs font-bold tracking-wide uppercase text-[var(--tips-muted)]">

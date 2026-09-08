@@ -21,7 +21,10 @@ export default function CreateMatchPage() {
   const create = api.tips.matchCreate.useMutation();
 
   const home = teams.data?.find((t) => t.isHomeClub);
-  const awayTeams = teams.data?.filter((t) => !t.isHomeClub) ?? [];
+  const awayTeams = useMemo(
+    () => teams.data?.filter((t) => !t.isHomeClub) ?? [],
+    [teams.data],
+  );
 
   const [awayTeamId, setAwayTeamId] = useState("");
   const [sponsorId, setSponsorId] = useState("");

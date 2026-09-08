@@ -10,7 +10,7 @@ import { cn } from "~/lib/utils";
 
 export function AppFooter({ className }: { className?: string }) {
   const { t } = useI18n();
-  const { appName, footerText } = useBranding();
+  const { footerText } = useBranding();
 
   return (
     <footer className={cn("border-t border-border-brand px-4 py-4", className)}>
@@ -32,7 +32,7 @@ export function AppFooter({ className }: { className?: string }) {
 }
 
 export function LanguageSwitcher() {
-  const { locale, setLocale, t } = useI18n();
+  const { locale, setLocale } = useI18n();
 
   return (
     <div className="flex items-center gap-2 text-sm md:text-base">

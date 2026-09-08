@@ -7,6 +7,7 @@ export function TipsInput({
   label,
   error,
   locked,
+  readOnly,
   ...props
 }: React.InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
@@ -25,7 +26,7 @@ export function TipsInput({
           locked && "opacity-60",
           className,
         )}
-        readOnly={locked || props.readOnly}
+        readOnly={locked ? true : readOnly}
         {...props}
       />
       {error ? (

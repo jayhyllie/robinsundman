@@ -4,7 +4,7 @@ import { useBranding } from "~/components/providers/branding-provider";
 import { cn } from "~/lib/utils";
 
 export function OikLogo({ className, showLogo = true }: { className?: string; showLogo?: boolean }) {
-  const { clubShort, clubName, logoUrl } = useBranding();
+  const { clubShort, logoUrl } = useBranding();
 
   return (
     <>

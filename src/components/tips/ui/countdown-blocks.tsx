@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { cn } from "~/lib/utils";
 
@@ -27,10 +27,14 @@ export function CountdownBlocks({
   className?: string;
   compact?: boolean;
 }) {
-  const end = typeof target === "string" ? new Date(target) : target;
+  const end = useMemo(
+    () => (typeof target === "string" ? new Date(target) : target),
+    [target],
+  );
   const [parts, setParts] = useState(() => diffParts(end));
 
   useEffect(() => {
+    setParts(diffParts(end));
     const id = setInterval(() => setParts(diffParts(end)), 1000);
     return () => clearInterval(id);
   }, [end]);
