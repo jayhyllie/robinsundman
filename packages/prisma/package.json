@@ -1,0 +1,10 @@
+{
+  "name": "@sundman/prisma",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./generated/client.ts"
+  },
+  "types": "./generated/client.ts"
+}

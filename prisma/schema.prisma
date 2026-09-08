@@ -1,0 +1,311 @@
+generator client {
+    provider = "prisma-client"
+    output   = "../packages/prisma/generated"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+// Tenant branding — one row per installation (white-label support)
+model Tenant {
+    id           String   @id @default("default")
+    appName      String   @default("BUSINESS CLUB")
+    challengeTag String   @default("CHALLENGE")
+    taglineSv    String   @default("5 frågor – 10 sekunder per fråga – Tävla mot andra företag!")
+    taglineEn    String   @default("5 questions – 10 seconds per question – Compete against companies!")
+    primaryColor        String   @default("#a4c639")
+    primaryBrightColor  String   @default("#39ff14")
+    accentColor         String   @default("#ffd700")
+    bgColor             String   @default("#0a120e")
+    cardColor           String   @default("rgba(10, 30, 18, 0.85)")
+    borderColor         String   @default("rgba(164, 198, 57, 0.4)")
+    sidebarColor        String   @default("#0f1a12")
+    borderRadius        String   @default("0.625rem")
+    logoUrl      String?
+    faviconUrl   String?
+    clubName     String   @default("Östersunds IK")
+    clubShort    String   @default("ÖIK")
+    hashtag      String   @default("#VIÄRÖIK")
+    footerText   String   @default("TILLSAMMANS ÄR VI STARKARE")
+    // Background photos shown behind the public-facing screens.
+    homeBgImageUrl     String?
+    joinBgImageUrl     String?
+    quizBgImageUrl     String?
+    nextMatchBgImageUrl String?
+    updatedAt      DateTime @updatedAt
+}
+
+enum QuizStatus {
+    DRAFT
+    SCHEDULED
+    LIVE
+    COMPLETED
+}
+
+enum QuestionType {
+    MULTIPLE_CHOICE
+    FREE_TEXT
+}
+
+enum SessionStatus {
+    LOBBY
+    QUESTION_ACTIVE
+    QUESTION_REVEAL
+    FREE_TEXT_REVIEW
+    COMPLETED
+}
+
+enum LeaderboardType {
+    SEASON
+    MONTHLY
+}
+
+model Company {
+    id           String         @id @default(cuid())
+    name         String         @unique
+    logoUrl      String?
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
+    participants Participant[]
+    companyScores CompanyScore[]
+    playerScores  PlayerScore[]
+}
+
+model Question {
+    id            String           @id @default(cuid())
+    textSv        String
+    textEn        String?
+    type          QuestionType
+    inBank        Boolean          @default(true)
+    createdAt     DateTime         @default(now())
+    updatedAt     DateTime         @updatedAt
+    options       QuestionOption[]
+    quizQuestions QuizQuestion[]
+}
+
+model QuestionOption {
+    id         String   @id @default(cuid())
+    questionId String
+    question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+    labelSv    String
+    labelEn    String?
+    letter     String
+    isCorrect  Boolean  @default(false)
+    order      Int
+
+    @@index([questionId])
+}
+
+model Quiz {
+    id          String         @id @default(cuid())
+    titleSv     String
+    titleEn     String?
+    status      QuizStatus     @default(DRAFT)
+    matchNumber Int?
+    matchTitle  String?
+    scheduledAt DateTime?
+    createdById String
+    createdAt   DateTime       @default(now())
+    updatedAt   DateTime       @updatedAt
+    questions   QuizQuestion[]
+    sessions    QuizSession[]
+}
+
+model QuizQuestion {
+    id           String   @id @default(cuid())
+    quizId       String
+    quiz         Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+    questionId   String
+    question     Question @relation(fields: [questionId], references: [id])
+    order        Int
+    timeLimitSec Int      @default(10)
+    answers      Answer[]
+
+    @@unique([quizId, order])
+    @@index([quizId])
+}
+
+model QuizSession {
+    id                   String        @id @default(cuid())
+    quizId               String
+    quiz                 Quiz          @relation(fields: [quizId], references: [id], onDelete: Cascade)
+    joinCode             String        @unique
+    status               SessionStatus @default(LOBBY)
+    currentQuestionIndex Int           @default(-1)
+    questionStartedAt    DateTime?
+    questionEndsAt       DateTime?
+    startedAt            DateTime?
+    endedAt              DateTime?
+    createdAt            DateTime      @default(now())
+    participants         Participant[]
+    answers              Answer[]
+
+    @@index([quizId])
+    @@index([joinCode])
+}
+
+model Participant {
+    id           String      @id @default(cuid())
+    sessionId    String
+    session      QuizSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+    companyId    String
+    company      Company     @relation(fields: [companyId], references: [id])
+    playerName   String
+    sessionToken String      @unique
+    totalScore   Int         @default(0)
+    joinedAt     DateTime    @default(now())
+    answers      Answer[]
+
+    @@unique([sessionId, playerName, companyId])
+    @@index([sessionId])
+}
+
+model Answer {
+    id             String       @id @default(cuid())
+    participantId  String
+    participant    Participant  @relation(fields: [participantId], references: [id], onDelete: Cascade)
+    sessionId      String
+    session        QuizSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+    quizQuestionId String
+    quizQuestion   QuizQuestion @relation(fields: [quizQuestionId], references: [id], onDelete: Cascade)
+    optionId       String?
+    textAnswer     String?
+    isCorrect      Boolean?
+    points         Int          @default(0)
+    answeredAt     DateTime     @default(now())
+    responseTimeMs Int?
+
+    @@unique([participantId, quizQuestionId])
+    @@index([sessionId])
+}
+
+model LeaderboardPeriod {
+    id           String          @id @default(cuid())
+    nameSv       String
+    nameEn       String?
+    type         LeaderboardType
+    startsAt     DateTime?
+    endsAt       DateTime?
+    isActive     Boolean         @default(true)
+    lastResetAt  DateTime?
+    createdAt    DateTime        @default(now())
+    companyScores CompanyScore[]
+    playerScores  PlayerScore[]
+}
+
+model CompanyScore {
+    id        String            @id @default(cuid())
+    companyId String
+    company   Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    periodId  String
+    period    LeaderboardPeriod @relation(fields: [periodId], references: [id], onDelete: Cascade)
+    points    Int               @default(0)
+    updatedAt DateTime          @updatedAt
+
+    @@unique([companyId, periodId])
+}
+
+model PlayerScore {
+    id         String            @id @default(cuid())
+    playerName String
+    companyId  String
+    company    Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    periodId   String
+    period     LeaderboardPeriod @relation(fields: [periodId], references: [id], onDelete: Cascade)
+    points     Int               @default(0)
+    updatedAt  DateTime          @updatedAt
+
+    @@unique([playerName, companyId, periodId])
+}
+
+// ─── Tips / Match Prediction ───────────────────────────────────────────────
+
+enum PredictionMatchStatus {
+    DRAFT
+    OPEN
+    CLOSED
+    RESULT_REGISTERED
+    WINNER_PICKED
+}
+
+enum CompetitionType {
+    FINAL_SCORE
+}
+
+model HockeyTeam {
+    id         String   @id @default(cuid())
+    name       String
+    shortName  String
+    logoUrl    String?
+    isHomeClub Boolean  @default(false)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+    homeMatches PredictionMatch[] @relation("HomeTeam")
+    awayMatches PredictionMatch[] @relation("AwayTeam")
+}
+
+model Sponsor {
+    id            String   @id @default(cuid())
+    name          String
+    logoUrl       String?
+    campaignText  String?
+    primaryColor  String?  @default("#ffd700")
+    accentColor   String?
+    textColor     String?
+    isActive      Boolean  @default(true)
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+    matches       PredictionMatch[]
+}
+
+model PredictionMatch {
+    id               String                @id @default(cuid())
+    slug             String                @unique
+    homeTeamId       String
+    homeTeam         HockeyTeam            @relation("HomeTeam", fields: [homeTeamId], references: [id])
+    awayTeamId       String
+    awayTeam         HockeyTeam            @relation("AwayTeam", fields: [awayTeamId], references: [id])
+    sponsorId        String?
+    sponsor          Sponsor?              @relation(fields: [sponsorId], references: [id])
+    puckDropAt       DateTime
+    status           PredictionMatchStatus @default(DRAFT)
+    homeScore        Int?
+    awayScore        Int?
+    predictionCount  Int                   @default(0)
+    competitionType  CompetitionType       @default(FINAL_SCORE)
+    createdAt        DateTime              @default(now())
+    updatedAt        DateTime              @updatedAt
+    predictions      MatchPrediction[]
+    winner           MatchWinner?
+
+    @@index([status])
+    @@index([puckDropAt])
+}
+
+model MatchPrediction {
+    id                   String          @id @default(cuid())
+    matchId              String
+    match                PredictionMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
+    playerName           String
+    email                String
+    marketingConsent     Boolean         @default(false)
+    marketingConsentAt   DateTime?
+    homeGoals            Int
+    awayGoals            Int
+    createdAt            DateTime        @default(now())
+    winner               MatchWinner?
+
+    @@unique([matchId, email])
+    @@index([matchId])
+    @@index([marketingConsent])
+}
+
+model MatchWinner {
+    id           String          @id @default(cuid())
+    matchId      String          @unique
+    match        PredictionMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
+    predictionId String          @unique
+    prediction   MatchPrediction @relation(fields: [predictionId], references: [id])
+    drawnAt      DateTime        @default(now())
+}

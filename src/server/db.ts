@@ -1,0 +1,24 @@
+import { env } from "~/env";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "@sundman/prisma";
+import type { PrismaClient as PrismaClientInstance } from "@sundman/prisma";
+
+const createPrismaClient = (): PrismaClientInstance => {
+  const adapter = new PrismaPg({
+    connectionString: env.DATABASE_URL,
+  });
+
+  return new PrismaClient({
+    adapter,
+    log:
+      env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+  }) as PrismaClientInstance;
+};
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: ReturnType<typeof createPrismaClient> | undefined;
+};
+
+export const db = globalForPrisma.prisma ?? createPrismaClient();
+
+if (env.NODE_ENV !== "production") globalForPrisma.prisma = db;

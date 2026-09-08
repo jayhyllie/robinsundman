@@ -1,0 +1,125 @@
+/* Tips design system — reusable tokens & utilities (quiz can adopt later) */
+
+:root {
+  --tips-arena-black: #0a120e;
+  --tips-club-lime: #a4c639;
+  --tips-ice-highlight: #39ff14;
+  --tips-trophy-gold: #ffd700;
+  --tips-rink-white: #f5f5f5;
+  --tips-muted: rgba(245, 245, 245, 0.55);
+  --tips-glass-bg: rgba(245, 245, 245, 0.05);
+  --tips-glass-border: rgba(245, 245, 245, 0.09);
+  --tips-glass-active: rgba(164, 198, 57, 0.12);
+  --tips-radius-sm: 12px;
+  --tips-radius-md: 20px;
+  --tips-radius-lg: 28px;
+  --tips-radius-pill: 999px;
+  --tips-font-display: var(--font-barlow-condensed), ui-sans-serif, system-ui, sans-serif;
+  --tips-font-body: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+}
+
+@theme inline {
+  --font-tips-display: var(--tips-font-display);
+  --font-tips-body: var(--tips-font-body);
+  --color-tips-black: var(--tips-arena-black);
+  --color-tips-lime: var(--tips-club-lime);
+  --color-tips-ice: var(--tips-ice-highlight);
+  --color-tips-gold: var(--tips-trophy-gold);
+  --color-tips-white: var(--tips-rink-white);
+}
+
+.tips-scope {
+  font-family: var(--tips-font-body);
+  color: var(--tips-rink-white);
+  background-color: var(--tips-arena-black);
+}
+
+.tips-scope .tips-display {
+  font-family: var(--tips-font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+}
+
+.tips-scope .tips-label {
+  font-family: var(--tips-font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--tips-club-lime);
+}
+
+.tips-scope .tips-glass {
+  background: var(--tips-glass-bg);
+  border: 1px solid var(--tips-glass-border);
+  backdrop-filter: blur(20px);
+  border-radius: var(--tips-radius-md);
+}
+
+.tips-scope .tips-glass-active {
+  background: var(--tips-glass-active);
+  border-color: color-mix(in srgb, var(--tips-club-lime) 45%, transparent);
+}
+
+.tips-scope .tips-bg {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(164, 198, 57, 0.16), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(57, 255, 20, 0.06), transparent 50%),
+    var(--tips-arena-black);
+}
+
+.tips-scope .tips-gold-text {
+  color: var(--tips-trophy-gold);
+}
+
+.tips-scope .tips-ice-text {
+  color: var(--tips-ice-highlight);
+}
+
+.tips-scope .tips-lime-text {
+  color: var(--tips-club-lime);
+}
+
+@keyframes tips-pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.65;
+  }
+}
+
+@keyframes tips-reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes tips-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 24px rgba(255, 215, 0, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.45);
+  }
+}
+
+.tips-animate-reveal {
+  animation: tips-reveal-in 0.7s ease-out both;
+}
+
+.tips-animate-glow {
+  animation: tips-glow 2.4s ease-in-out infinite;
+}
+
+.tips-live-dot {
+  animation: tips-pulse-soft 1.6s ease-in-out infinite;
+}

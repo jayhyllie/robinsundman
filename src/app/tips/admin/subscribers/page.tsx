@@ -1,0 +1,91 @@
+"use client";
+
+import { toast } from "sonner";
+
+import {
+  TipsButton,
+  TipsGlassCard,
+} from "~/components/tips/ui";
+import { api } from "~/trpc/react";
+
+export default function SubscribersAdminPage() {
+  const subscribers = api.tips.marketingSubscribers.useQuery();
+
+  function exportCsv() {
+    const rows = subscribers.data ?? [];
+    if (rows.length === 0) {
+      toast.error("Inga prenumeranter att exportera");
+      return;
+    }
+    const header = "email,playerName,marketingConsentAt";
+    const body = rows
+      .map((r) => {
+        const at = r.marketingConsentAt
+          ? new Date(r.marketingConsentAt).toISOString()
+          : "";
+        const name = `"${r.playerName.replace(/"/g, '""')}"`;
+        return `${r.email},${name},${at}`;
+      })
+      .join("\n");
+    const blob = new Blob([`${header}\n${body}\n`], {
+      type: "text/csv;charset=utf-8",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `tips-newsletter-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("CSV exporterad");
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="tips-label">Export</p>
+          <h1 className="tips-display text-5xl">Newsletter consent</h1>
+          <p className="mt-2 text-sm text-[var(--tips-muted)]">
+            Unika e-postadresser som godkänt nyhetsbrev och erbjudanden.
+          </p>
+        </div>
+        <TipsButton
+          variant="gold"
+          onClick={exportCsv}
+          disabled={!subscribers.data?.length}
+        >
+          Export CSV
+        </TipsButton>
+      </div>
+
+      <TipsGlassCard>
+        <p className="tips-label mb-3">
+          {subscribers.data?.length ?? 0} subscribers
+        </p>
+        <div className="max-h-[28rem] space-y-2 overflow-auto">
+          {subscribers.data?.map((s) => (
+            <div
+              key={s.email}
+              className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--tips-glass-border)] py-2 text-sm"
+            >
+              <div>
+                <p className="font-bold">{s.email}</p>
+                <p className="text-[var(--tips-muted)]">{s.playerName}</p>
+              </div>
+              <span className="text-xs text-[var(--tips-muted)]">
+                {s.marketingConsentAt
+                  ? new Date(s.marketingConsentAt).toLocaleString("sv-SE")
+                  : "—"}
+              </span>
+            </div>
+          ))}
+          {(subscribers.data?.length ?? 0) === 0 ? (
+            <p className="text-sm text-[var(--tips-muted)]">
+              Inga godkännanden ännu.
+            </p>
+          ) : null}
+        </div>
+      </TipsGlassCard>
+    </div>
+  );
+}
