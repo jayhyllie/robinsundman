@@ -12,7 +12,7 @@ const createPrismaClient = (): PrismaClientInstance => {
     adapter,
     log:
       env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
-  }) as PrismaClientInstance;
+  });
 };
 
 const globalForPrisma = globalThis as unknown as {

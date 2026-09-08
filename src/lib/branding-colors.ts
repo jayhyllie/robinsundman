@@ -41,9 +41,10 @@ export function parseCssColor(value: string): { hex: string; alpha: number } {
     return { hex: trimmed.toLowerCase(), alpha: 1 };
   }
 
-  const match = trimmed.match(
-    /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*([\d.]+))?\s*\)$/i,
-  );
+  const match =
+    /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*([\d.]+))?\s*\)$/i.exec(
+      trimmed,
+    );
   if (match) {
     const r = Number(match[1]);
     const g = Number(match[2]);
@@ -73,9 +74,9 @@ export function formatCssColor(
 /** Parse CSS border-radius (rem or px) to pixels for the admin slider. */
 export function parseBorderRadiusPx(value: string): number {
   const trimmed = value.trim();
-  const remMatch = trimmed.match(/^([\d.]+)rem$/);
+  const remMatch = /^([\d.]+)rem$/.exec(trimmed);
   if (remMatch) return Math.round(Number(remMatch[1]) * 16);
-  const pxMatch = trimmed.match(/^([\d.]+)px$/);
+  const pxMatch = /^([\d.]+)px$/.exec(trimmed);
   if (pxMatch) return Math.round(Number(pxMatch[1]));
   return 10;
 }

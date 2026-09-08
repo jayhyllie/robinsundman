@@ -120,7 +120,7 @@ export async function applyFreeTextAwards(
 
   for (const award of awards) {
     const answer = answerMap.get(award.answerId);
-    if (!answer || answer.quizQuestion.question.type !== "FREE_TEXT") {
+    if (answer?.quizQuestion.question.type !== "FREE_TEXT") {
       throw new Error(`Invalid free-text answer: ${award.answerId}`);
     }
 

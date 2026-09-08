@@ -1,7 +1,5 @@
 "use client";
 
-import { CalendarClock } from "lucide-react";
-
 import { useBranding } from "~/components/providers/branding-provider";
 import { useI18n } from "~/components/providers/i18n-provider";
 import { cn } from "~/lib/utils";

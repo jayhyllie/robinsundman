@@ -448,9 +448,11 @@ export const tipsRouter = createTRPCRouter({
         throw new TRPCError({ code: "BAD_REQUEST", message: "Away team missing" });
       }
 
+      const trimmedSlug = input.slug?.trim();
       let slug =
-        input.slug?.trim() ||
-        slugify(`${home.shortName}-vs-${away.shortName}-${Date.now()}`);
+        trimmedSlug && trimmedSlug.length > 0
+          ? trimmedSlug
+          : slugify(`${home.shortName}-vs-${away.shortName}-${Date.now()}`);
       const existing = await ctx.db.predictionMatch.findUnique({
         where: { slug },
       });
@@ -534,7 +536,7 @@ export const tipsRouter = createTRPCRouter({
       const match = await ctx.db.predictionMatch.findUnique({
         where: { id: input.matchId },
       });
-      if (!match || match.homeScore == null || match.awayScore == null) {
+      if (match?.homeScore == null || match.awayScore == null) {
         return [];
       }
       return ctx.db.matchPrediction.findMany({
@@ -554,7 +556,7 @@ export const tipsRouter = createTRPCRouter({
         where: { id: input.matchId },
         include: { winner: true },
       });
-      if (!match || match.homeScore == null || match.awayScore == null) {
+      if (match?.homeScore == null || match.awayScore == null) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Register result first",
