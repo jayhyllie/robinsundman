@@ -13,6 +13,7 @@ export const env = createEnv({
   },
   client: {
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1).optional(),
+    NEXT_PUBLIC_CLERK_DOMAIN: z.string().min(1).optional(),
     NEXT_PUBLIC_SOCKET_URL: z.string().url().optional(),
     NEXT_PUBLIC_APP_URL: z.string().url().optional(),
   },
@@ -24,6 +25,7 @@ export const env = createEnv({
     SOCKET_SERVER_SECRET: process.env.SOCKET_SERVER_SECRET,
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+    NEXT_PUBLIC_CLERK_DOMAIN: process.env.NEXT_PUBLIC_CLERK_DOMAIN,
     NEXT_PUBLIC_SOCKET_URL: process.env.NEXT_PUBLIC_SOCKET_URL,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
   },

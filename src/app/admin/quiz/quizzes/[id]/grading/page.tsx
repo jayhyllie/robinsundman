@@ -33,7 +33,7 @@ function QuizFreeTextGradingContent() {
       <div className="space-y-4">
         <h1 className="text-2xl font-bold">{t("freeTextGrading")}</h1>
         <p className="text-muted-foreground">{t("noSessionForGrading")}</p>
-        <LinkButton href={`/quiz/admin/quizzes/${params.id}`} variant="outline">
+        <LinkButton href={`/admin/quiz/quizzes/${params.id}`} variant="outline">
           {t("backToQuiz")}
         </LinkButton>
       </div>
@@ -48,11 +48,11 @@ function QuizFreeTextGradingContent() {
           <p className="text-muted-foreground">{quiz.titleSv}</p>
         </div>
         <div className="flex gap-2">
-          <LinkButton href={`/quiz/admin/quizzes/${params.id}`} variant="outline">
+          <LinkButton href={`/admin/quiz/quizzes/${params.id}`} variant="outline">
             {t("backToQuiz")}
           </LinkButton>
           <LinkButton
-            href={`/quiz/admin/quizzes/${params.id}/host?session=${sessionId}`}
+            href={`/admin/quiz/quizzes/${params.id}/host?session=${sessionId}`}
             variant="outline"
           >
             {t("hostPanel")}

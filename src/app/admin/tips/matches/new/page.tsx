@@ -71,7 +71,7 @@ export default function CreateMatchPage() {
         publish,
       });
       toast.success(publish ? "Match published" : "Draft saved");
-      router.push(`/tips/admin/matches/${match.id}`);
+      router.push(`/admin/tips/matches/${match.id}`);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed");
     }
@@ -105,7 +105,7 @@ export default function CreateMatchPage() {
                 <p className="text-sm text-[--tips-muted]">
                   No home club configured. Mark one under Teams first.
                 </p>
-                <Link href="/tips/admin/teams">
+                <Link href="/admin/tips/teams">
                   <TipsButton variant="secondary" size="sm">
                     Open teams
                   </TipsButton>
@@ -179,7 +179,7 @@ export default function CreateMatchPage() {
             >
               Save draft
             </TipsButton>
-            <Link href="/tips/admin/matches">
+            <Link href="/admin/tips/matches">
               <TipsButton variant="tertiary">Cancel</TipsButton>
             </Link>
           </div>

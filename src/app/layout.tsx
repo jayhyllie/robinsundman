@@ -7,6 +7,7 @@ import { I18nProvider } from "~/components/providers/i18n-provider";
 import { CLERK_ENABLED } from "~/lib/auth-mode";
 import { Toaster } from "~/components/ui/sonner";
 import { TRPCReactProvider } from "~/trpc/react";
+import { env } from "~/env";
 import "~/styles/globals.css";
 import "~/styles/tips-design.css";
 
@@ -67,5 +68,15 @@ export default function RootLayout({
     </html>
   );
 
-  return CLERK_ENABLED ? <ClerkProvider>{app}</ClerkProvider> : app;
+  return CLERK_ENABLED ? (
+    <ClerkProvider
+      {...(env.NEXT_PUBLIC_CLERK_DOMAIN
+        ? { domain: env.NEXT_PUBLIC_CLERK_DOMAIN }
+        : {})}
+    >
+      {app}
+    </ClerkProvider>
+  ) : (
+    app
+  );
 }

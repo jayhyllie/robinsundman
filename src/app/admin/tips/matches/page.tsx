@@ -20,7 +20,7 @@ export default function TipsMatchesPage() {
           <p className="tips-label">Matches</p>
           <h1 className="tips-display text-5xl">Match list</h1>
         </div>
-        <Link href="/tips/admin/matches/new">
+        <Link href="/admin/tips/matches/new">
           <TipsButton>Create match</TipsButton>
         </Link>
       </div>
@@ -66,13 +66,13 @@ export default function TipsMatchesPage() {
             <div className="ml-auto flex flex-wrap gap-2">
               {(m.status === "CLOSED" || m.status === "OPEN") &&
               m.homeScore == null ? (
-                <Link href={`/tips/admin/matches/${m.id}`}>
+                <Link href={`/admin/tips/matches/${m.id}`}>
                   <TipsButton variant="gold" size="sm">
                     Register result
                   </TipsButton>
                 </Link>
               ) : null}
-              <Link href={`/tips/admin/matches/${m.id}`}>
+              <Link href={`/admin/tips/matches/${m.id}`}>
                 <TipsButton variant="secondary" size="sm">
                   Open
                 </TipsButton>

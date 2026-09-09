@@ -42,10 +42,10 @@ export default function TipsAdminHomePage() {
       </div>
 
       <div className="flex flex-wrap gap-3">
-        <Link href="/tips/admin/matches/new">
+        <Link href="/admin/tips/matches/new">
           <TipsButton>Create match</TipsButton>
         </Link>
-        <Link href="/tips/admin/matches">
+        <Link href="/admin/tips/matches">
           <TipsButton variant="secondary">All matches</TipsButton>
         </Link>
       </div>
@@ -68,7 +68,7 @@ export default function TipsAdminHomePage() {
                   Arena
                 </TipsButton>
               </Link>
-              <Link href={`/tips/admin/matches/${open[0].id}`}>
+              <Link href={`/admin/tips/matches/${open[0].id}`}>
                 <TipsButton size="sm">Manage</TipsButton>
               </Link>
             </div>

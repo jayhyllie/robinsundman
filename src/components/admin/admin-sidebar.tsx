@@ -36,12 +36,12 @@ import { TooltipProvider } from "~/components/ui/tooltip";
 import { CLERK_ENABLED } from "~/lib/auth-mode";
 
 const navItems = [
-  { href: "/quiz/admin", icon: Home, labelKey: "home" as const },
-  { href: "/quiz/admin/quizzes", icon: Gamepad2, labelKey: "quizzes" as const },
-  { href: "/quiz/admin/companies", icon: Building2, labelKey: "companies" as const },
-  { href: "/quiz/admin/questions", icon: Library, labelKey: "questionBank" as const },
-  { href: "/quiz/admin/leaderboards", icon: Trophy, labelKey: "leaderboards" as const },
-  { href: "/quiz/admin/branding", icon: Palette, labelKey: "branding" as const },
+  { href: "/admin/quiz", icon: Home, labelKey: "home" as const },
+  { href: "/admin/quiz/quizzes", icon: Gamepad2, labelKey: "quizzes" as const },
+  { href: "/admin/quiz/companies", icon: Building2, labelKey: "companies" as const },
+  { href: "/admin/quiz/questions", icon: Library, labelKey: "questionBank" as const },
+  { href: "/admin/quiz/leaderboards", icon: Trophy, labelKey: "leaderboards" as const },
+  { href: "/admin/quiz/branding", icon: Palette, labelKey: "branding" as const },
 ];
 
 function AdminNav() {
@@ -55,8 +55,8 @@ function AdminNav() {
         <SidebarMenu>
           {navItems.map(({ href, icon: Icon, labelKey }) => {
             const isActive =
-              href === "/quiz/admin"
-                ? pathname === "/quiz/admin"
+              href === "/admin/quiz"
+                ? pathname === "/admin/quiz"
                 : pathname.startsWith(href);
             const label = t(labelKey).toLocaleUpperCase();
 
@@ -69,7 +69,7 @@ function AdminNav() {
                   onClick={() => {
                     if (isMobile) setOpenMobile(false);
                   }}
-                  className="uppercase tracking-wide data-active:bg-[var(--tips-club-lime)] data-active:text-[var(--tips-arena-black)] data-active:hover:bg-[var(--tips-club-lime)]/90 data-active:hover:text-[var(--tips-arena-black)]"
+                  className="uppercase tracking-wide data-active:bg-[--tips-club-lime] data-active:text-[--tips-arena-black] data-active:hover:bg-[--tips-club-lime]/90 data-active:hover:text-[--tips-arena-black]"
                 >
                   <Icon />
                   <span>{label}</span>
@@ -100,6 +100,18 @@ function AdminSidebar() {
         <div className="group-data-[collapsible=icon]:hidden">
           <NextMatchWidget />
         </div>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              render={<Link href="/admin" />}
+              tooltip="Admin"
+              className="uppercase tracking-wide"
+            >
+              <Home />
+              <span>ADMIN HUB</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
         {CLERK_ENABLED && (
           <>
             <SidebarSeparator />
@@ -124,7 +136,7 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
         >
           <AdminSidebar />
           <SidebarInset className="min-h-0 overflow-hidden bg-transparent">
-            <header className="flex h-14 shrink-0 items-center gap-2 border-b border-[var(--tips-glass-border)] px-4">
+            <header className="flex h-14 shrink-0 items-center gap-2 border-b border-[--tips-glass-border] px-4">
               <SidebarTrigger className="-ml-1" />
               <div className="md:hidden">
                 <OikLogo className="scale-90" />

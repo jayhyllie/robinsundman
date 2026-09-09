@@ -118,7 +118,7 @@ export default function MatchDetailPage() {
             Close tipping
           </TipsButton>
         ) : null}
-        <Link href={`/tips/admin/matches/${id}/winner`}>
+        <Link href={`/admin/tips/matches/${id}/winner`}>
           <TipsButton variant="gold">Winner selection</TipsButton>
         </Link>
       </div>

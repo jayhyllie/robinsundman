@@ -18,11 +18,11 @@ import { CLERK_ENABLED } from "~/lib/auth-mode";
 import { cn } from "~/lib/utils";
 
 const nav = [
-  { href: "/tips/admin", label: "Home", icon: Home, exact: true },
-  { href: "/tips/admin/matches", label: "Matches", icon: Trophy },
-  { href: "/tips/admin/teams", label: "Teams", icon: Building2 },
-  { href: "/tips/admin/sponsors", label: "Sponsors", icon: Handshake },
-  { href: "/tips/admin/subscribers", label: "Subscribers", icon: Mail },
+  { href: "/admin/tips", label: "Home", icon: Home, exact: true },
+  { href: "/admin/tips/matches", label: "Matches", icon: Trophy },
+  { href: "/admin/tips/teams", label: "Teams", icon: Building2 },
+  { href: "/admin/tips/sponsors", label: "Sponsors", icon: Handshake },
+  { href: "/admin/tips/subscribers", label: "Subscribers", icon: Mail },
 ];
 
 export function TipsAdminShell({ children }: { children: ReactNode }) {
@@ -58,10 +58,10 @@ export function TipsAdminShell({ children }: { children: ReactNode }) {
           })}
         </nav>
         <Link
-          href="/quiz/admin"
+          href="/admin"
           className="mt-4 flex items-center gap-2 px-2 text-xs text-[--tips-muted] hover:text-[--tips-club-lime]"
         >
-          <Medal className="size-3.5" /> Quiz admin
+          <Medal className="size-3.5" /> Admin hub
         </Link>
         {CLERK_ENABLED ? (
           <div className="mt-4 px-2">

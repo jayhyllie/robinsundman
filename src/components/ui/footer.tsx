@@ -61,7 +61,7 @@ export function LanguageSwitcher() {
 export function AdminLink() {
   const { t } = useI18n();
   return (
-    <LinkButton href="/quiz/admin" variant="outline" size="default">
+    <LinkButton href="/admin" variant="outline" size="default">
       {t("admin")}
     </LinkButton>
   );

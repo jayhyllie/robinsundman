@@ -4,13 +4,13 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 function safeInternalPath(redirectUrl: string | undefined, origin: string) {
-  if (!redirectUrl) return "/quiz/admin";
+  if (!redirectUrl) return "/admin";
   try {
     const parsed = new URL(redirectUrl, origin);
-    if (parsed.origin !== new URL(origin).origin) return "/quiz/admin";
-    return `${parsed.pathname}${parsed.search}` || "/quiz/admin";
+    if (parsed.origin !== new URL(origin).origin) return "/admin";
+    return `${parsed.pathname}${parsed.search}` || "/admin";
   } catch {
-    return "/quiz/admin";
+    return "/admin";
   }
 }
 

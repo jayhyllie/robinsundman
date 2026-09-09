@@ -26,7 +26,7 @@ export default function QuizDetailPage() {
 
   const launchMutation = api.quiz.launchSession.useMutation({
     onSuccess: (session) => {
-      window.location.href = `/quiz/admin/quizzes/${params.id}/host?session=${session.id}`;
+      window.location.href = `/admin/quiz/quizzes/${params.id}/host?session=${session.id}`;
     },
   });
 
@@ -62,7 +62,7 @@ export default function QuizDetailPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           {latestSession && latestSession.status !== "COMPLETED" ? (
-            <LinkButton href={`/quiz/admin/quizzes/${quiz.id}/host?session=${latestSession.id}`}>
+            <LinkButton href={`/admin/quiz/quizzes/${quiz.id}/host?session=${latestSession.id}`}>
               {t("hostPanel")}
             </LinkButton>
           ) : (
@@ -76,7 +76,7 @@ export default function QuizDetailPage() {
           )}
           {hasFreeText && latestSession && (
             <LinkButton
-              href={`/quiz/admin/quizzes/${quiz.id}/grading?session=${latestSession.id}`}
+              href={`/admin/quiz/quizzes/${quiz.id}/grading?session=${latestSession.id}`}
               variant="outline"
             >
               {t("gradeFreeTextLater")}

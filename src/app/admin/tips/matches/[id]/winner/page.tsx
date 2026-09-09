@@ -129,7 +129,7 @@ export default function WinnerAdminPage() {
         </div>
       </TipsGlassCard>
 
-      <Link href={`/tips/admin/matches/${id}`}>
+      <Link href={`/admin/tips/matches/${id}`}>
         <TipsButton variant="tertiary">← Back to match</TipsButton>
       </Link>
     </div>

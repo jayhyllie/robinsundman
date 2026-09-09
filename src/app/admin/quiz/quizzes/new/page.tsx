@@ -42,7 +42,7 @@ export default function NewQuizPage() {
   const createMutation = api.quiz.create.useMutation({
     onSuccess: (quiz) => {
       toast.success(t("save"));
-      router.push(`/quiz/admin/quizzes/${quiz.id}`);
+      router.push(`/admin/quiz/quizzes/${quiz.id}`);
     },
     onError: (e) => toast.error(e.message),
   });
@@ -198,7 +198,7 @@ export default function NewQuizPage() {
           {bankQuestions?.length === 0 && (
             <p className="text-sm text-muted-foreground">
               {t("noData")}.{" "}
-              <a href="/quiz/admin/questions" className="text-primary underline">
+              <a href="/admin/quiz/questions" className="text-primary underline">
                 {t("addQuestion")}
               </a>
             </p>

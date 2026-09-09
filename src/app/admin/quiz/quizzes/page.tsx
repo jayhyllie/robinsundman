@@ -28,7 +28,7 @@ export default function AdminQuizzesPage() {
   const { data: quizzes, isLoading } = api.quiz.list.useQuery();
   const launchMutation = api.quiz.launchSession.useMutation({
     onSuccess: (session) => {
-      window.location.href = `/quiz/admin/quizzes/${session.quizId}/host?session=${session.id}`;
+      window.location.href = `/admin/quiz/quizzes/${session.quizId}/host?session=${session.id}`;
     },
   });
 
@@ -37,7 +37,7 @@ export default function AdminQuizzesPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{t("quizzes")}</h1>
         <LinkButton
-          href="/quiz/admin/quizzes/new"
+          href="/admin/quiz/quizzes/new"
           className="bg-accent text-accent-foreground hover:bg-accent/90"
         >
           <Plus className="mr-2 h-4 w-4" />
@@ -88,14 +88,14 @@ export default function AdminQuizzesPage() {
                     <LinkButton
                       variant="outline"
                       size="sm"
-                      href={`/quiz/admin/quizzes/${quiz.id}`}
+                      href={`/admin/quiz/quizzes/${quiz.id}`}
                     >
                       {t("edit")}
                     </LinkButton>
                     {latestSession && latestSession.status !== "COMPLETED" ? (
                       <LinkButton
                         size="sm"
-                        href={`/quiz/admin/quizzes/${quiz.id}/host?session=${latestSession.id}`}
+                        href={`/admin/quiz/quizzes/${quiz.id}/host?session=${latestSession.id}`}
                       >
                         {t("hostPanel")}
                       </LinkButton>

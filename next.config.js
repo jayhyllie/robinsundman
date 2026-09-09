@@ -36,13 +36,23 @@ const config = {
         permanent: false,
       },
       {
-        source: "/admin",
-        destination: "/quiz/admin",
+        source: "/quiz/admin",
+        destination: "/admin/quiz",
         permanent: false,
       },
       {
-        source: "/admin/:path*",
-        destination: "/quiz/admin/:path*",
+        source: "/quiz/admin/:path*",
+        destination: "/admin/quiz/:path*",
+        permanent: false,
+      },
+      {
+        source: "/tips/admin",
+        destination: "/admin/tips",
+        permanent: false,
+      },
+      {
+        source: "/tips/admin/:path*",
+        destination: "/admin/tips/:path*",
         permanent: false,
       },
     ];

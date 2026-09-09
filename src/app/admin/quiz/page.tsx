@@ -67,7 +67,7 @@ export default function AdminDashboard() {
             <CardTitle className="text-base">{t("quizzes")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <LinkButton href="/quiz/admin/quizzes" className="w-full">
+            <LinkButton href="/admin/quiz/quizzes" className="w-full">
               {t("viewAll")}
             </LinkButton>
           </CardContent>
@@ -78,7 +78,7 @@ export default function AdminDashboard() {
             <CardTitle className="text-base">{t("companies")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <LinkButton href="/quiz/admin/companies" variant="outline" className="w-full">
+            <LinkButton href="/admin/quiz/companies" variant="outline" className="w-full">
               {t("viewAll")}
             </LinkButton>
           </CardContent>
@@ -89,7 +89,7 @@ export default function AdminDashboard() {
             <CardTitle className="text-base">{t("questionBank")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <LinkButton href="/quiz/admin/questions" variant="outline" className="w-full">
+            <LinkButton href="/admin/quiz/questions" variant="outline" className="w-full">
               {t("viewAll")}
             </LinkButton>
           </CardContent>
@@ -100,7 +100,7 @@ export default function AdminDashboard() {
             <CardTitle className="text-base">{t("leaderboards")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <LinkButton href="/quiz/admin/leaderboards" variant="outline" className="w-full">
+            <LinkButton href="/admin/quiz/leaderboards" variant="outline" className="w-full">
               {t("viewAll")}
             </LinkButton>
           </CardContent>

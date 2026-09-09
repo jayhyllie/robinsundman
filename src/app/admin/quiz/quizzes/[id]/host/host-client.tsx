@@ -123,7 +123,7 @@ export default function HostPanelClient() {
             freeTextGrading &&
             freeTextGrading.questions.length > 0 && (
             <LinkButton
-              href={`/quiz/admin/quizzes/${session.quizId}/grading?session=${sessionId}`}
+              href={`/admin/quiz/quizzes/${session.quizId}/grading?session=${sessionId}`}
               variant="outline"
             >
               {t("gradeFreeTextLater")}

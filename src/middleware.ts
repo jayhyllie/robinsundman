@@ -2,11 +2,9 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 import { CLERK_ENABLED } from "~/lib/auth-mode";
+import { env } from "~/env";
 
-const isAdminRoute = createRouteMatcher([
-  "/quiz/admin(.*)",
-  "/tips/admin(.*)",
-]);
+const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 
 export default CLERK_ENABLED
   ? clerkMiddleware(
@@ -21,6 +19,9 @@ export default CLERK_ENABLED
       {
         signInUrl: "/sign-in",
         signUpUrl: "/sign-up",
+        ...(env.NEXT_PUBLIC_CLERK_DOMAIN
+          ? { domain: env.NEXT_PUBLIC_CLERK_DOMAIN }
+          : {}),
       },
     )
   : () => NextResponse.next();
