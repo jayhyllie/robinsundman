@@ -9,18 +9,25 @@ const isAdminRoute = createRouteMatcher([
 ]);
 
 export default CLERK_ENABLED
-  ? clerkMiddleware(async (auth, req) => {
-      if (isAdminRoute(req)) {
-        await auth.protect();
-      }
-    })
+  ? clerkMiddleware(
+      async (auth, req) => {
+        if (!isAdminRoute(req)) return;
+
+        const { userId, redirectToSignIn } = await auth();
+        if (!userId) {
+          return redirectToSignIn({ returnBackUrl: req.url });
+        }
+      },
+      {
+        signInUrl: "/sign-in",
+        signUpUrl: "/sign-up",
+      },
+    )
   : () => NextResponse.next();
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and static files, unless found in search params
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
     "/(api|trpc)(.*)",
   ],
 };
