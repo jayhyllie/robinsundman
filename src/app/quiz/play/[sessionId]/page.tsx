@@ -25,8 +25,8 @@ function HeaderPill({
   children: React.ReactNode;
 }) {
   return (
-    <span className="tips-glass flex items-center gap-1.5 rounded-[var(--tips-radius-pill)] px-2.5 py-1 text-[11px] font-extrabold tracking-[0.14em] text-[var(--tips-rink-white)] uppercase">
-      <Icon className="h-3 w-3 text-[var(--tips-club-lime)]" />
+    <span className="tips-glass flex items-center gap-1.5 rounded-[--tips-radius-pill] px-2.5 py-1 text-[11px] font-extrabold tracking-[0.14em] text-[--tips-rink-white] uppercase">
+      <Icon className="h-3 w-3 text-[--tips-club-lime]" />
       {children}
     </span>
   );
@@ -106,7 +106,7 @@ export default function PlayPage() {
   if (!sessionToken) {
     return (
       <MobileShell bgImage={quizBgImageUrl}>
-        <p className="text-center text-muted-foreground">{t("cannotJoin")}</p>
+        <p className="text-center text-[--tips-muted]">{t("cannotJoin")}</p>
       </MobileShell>
     );
   }
@@ -118,7 +118,7 @@ export default function PlayPage() {
   return (
     <div className="tips-scope tips-bg relative isolate mobile-only flex min-h-screen flex-col">
       <HeroBackground imageUrl={quizBgImageUrl} />
-      <header className="relative z-10 flex items-center justify-between border-b border-[var(--tips-glass-border)] px-4 py-3">
+      <header className="relative z-10 flex items-center justify-between border-b border-[--tips-glass-border] px-4 py-3">
         <OikLogo />
         <div className="flex items-center gap-2">
           <HeaderPill icon={Users}>
@@ -136,30 +136,30 @@ export default function PlayPage() {
         {state?.status === "LOBBY" && (
           <TipsGlassCard className="flex flex-col items-center gap-6 py-12 text-center tips-animate-reveal">
               <div className="relative flex h-24 w-24 items-center justify-center">
-                <span className="absolute inline-flex h-24 w-24 animate-ping rounded-full bg-[var(--tips-club-lime)]/20" />
-                <span className="absolute inline-flex h-16 w-16 animate-ping rounded-full bg-[var(--tips-trophy-gold)]/20 [animation-delay:300ms]" />
-                <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-[var(--tips-glass-active)] text-[var(--tips-club-lime)]">
+                <span className="absolute inline-flex h-24 w-24 animate-ping rounded-full bg-[--tips-club-lime]/20" />
+                <span className="absolute inline-flex h-16 w-16 animate-ping rounded-full bg-[--tips-trophy-gold]/20 [animation-delay:300ms]" />
+                <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-[--tips-glass-active] text-[--tips-club-lime]">
                   <Users className="h-6 w-6" />
                 </span>
               </div>
 
               <div>
                 <p className="tips-label mb-2">{t("waitingRoom")}</p>
-                <p className="tips-display text-3xl text-[var(--tips-rink-white)]">
+                <p className="tips-display text-3xl text-[--tips-rink-white]">
                   {state.participantCount} {t("playersInLobby")}
                 </p>
               </div>
 
               {participant && (
-                <div className="tips-glass rounded-[var(--tips-radius-sm)] px-4 py-2 text-sm">
-                  <span className="text-[var(--tips-muted)]">{t("registeredAs")} </span>
+                <div className="tips-glass rounded-[--tips-radius-sm] px-4 py-2 text-sm">
+                  <span className="text-[--tips-muted]">{t("registeredAs")} </span>
                   <span className="font-extrabold tips-gold-text">{participant.playerName}</span>
-                  <span className="text-[var(--tips-muted)]"> — {participant.company.name}</span>
+                  <span className="text-[--tips-muted]"> — {participant.company.name}</span>
                 </div>
               )}
 
               {!connected && (
-                <p className="text-xs text-[var(--tips-muted)]">{t("rejoining")}</p>
+                <p className="text-xs text-[--tips-muted]">{t("rejoining")}</p>
               )}
           </TipsGlassCard>
         )}
@@ -181,7 +181,7 @@ export default function PlayPage() {
                 {state.totalQuestions}
               </TipsBadge>
               <div className="text-right">
-                <div className="tips-label !text-[var(--tips-muted)]">{t("yourScore")}</div>
+                <div className="tips-label text-[--tips-muted]!">{t("yourScore")}</div>
                 <div className="tips-display text-3xl tips-ice-text">{myScore}</div>
               </div>
             </div>
@@ -220,7 +220,7 @@ export default function PlayPage() {
         )}
 
         {state?.status === "FREE_TEXT_REVIEW" && (
-          <p className="mt-4 text-center text-sm text-[var(--tips-muted)]">
+          <p className="mt-4 text-center text-sm text-[--tips-muted]">
             {t("waitingForHost")}
           </p>
         )}

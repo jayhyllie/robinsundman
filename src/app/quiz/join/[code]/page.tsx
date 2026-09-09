@@ -30,8 +30,8 @@ function InfoPill({
   children: React.ReactNode;
 }) {
   return (
-    <span className="tips-glass flex items-center gap-1.5 rounded-[var(--tips-radius-pill)] px-3 py-1.5 text-[11px] font-extrabold tracking-[0.14em] text-[var(--tips-rink-white)] uppercase">
-      <Icon className="h-3.5 w-3.5 text-[var(--tips-club-lime)]" />
+    <span className="tips-glass flex items-center gap-1.5 rounded-[--tips-radius-pill] px-3 py-1.5 text-[11px] font-extrabold tracking-[0.14em] text-[--tips-rink-white] uppercase">
+      <Icon className="h-3.5 w-3.5 text-[--tips-club-lime]" />
       {children}
     </span>
   );
@@ -85,7 +85,7 @@ function JoinCombobox({
 
   return (
     <div className="space-y-2">
-      <Label className="tips-label !normal-case tracking-[0.18em]">{label}</Label>
+      <Label className="tips-label normal-case! tracking-[0.18em]">{label}</Label>
       <div className="relative" ref={containerRef}>
         <div className="relative">
           <Input
@@ -103,7 +103,7 @@ function JoinCombobox({
             type="button"
             disabled={disabled}
             aria-label="Show options"
-            className="absolute top-0 right-0 flex h-full w-9 items-center justify-center text-[var(--tips-muted)] hover:text-[var(--tips-rink-white)] disabled:opacity-50"
+            className="absolute top-0 right-0 flex h-full w-9 items-center justify-center text-[--tips-muted] hover:text-[--tips-rink-white] disabled:opacity-50"
             onClick={() => setOpen((prev) => !prev)}
           >
             <ChevronDown
@@ -120,7 +120,7 @@ function JoinCombobox({
                   <li key={option.value}>
                     <button
                       type="button"
-                      className="w-full px-3 py-2.5 text-left text-sm hover:bg-[var(--tips-glass-active)]"
+                      className="w-full px-3 py-2.5 text-left text-sm hover:bg-[--tips-glass-active]"
                       onMouseDown={() => {
                         onSelect(option);
                         setOpen(false);
@@ -132,14 +132,14 @@ function JoinCombobox({
                 ))}
               </ul>
             ) : (
-              <p className="px-3 py-2 text-sm text-[var(--tips-muted)]">
+              <p className="px-3 py-2 text-sm text-[--tips-muted]">
                 {query ? "—" : ""}
               </p>
             )}
             {showAddNew && addNewLabel && onConfirmNew && (
               <button
                 type="button"
-                className="flex w-full items-center gap-2 border-t border-[var(--tips-glass-border)] px-3 py-2.5 text-sm text-[var(--tips-club-lime)] hover:bg-[var(--tips-glass-active)]"
+                className="flex w-full items-center gap-2 border-t border-[--tips-glass-border] px-3 py-2.5 text-sm text-[--tips-club-lime] hover:bg-[--tips-glass-active]"
                 onMouseDown={() => {
                   onConfirmNew();
                   setOpen(false);
@@ -368,7 +368,7 @@ export default function JoinPage() {
               />
 
               {isNewCompany && companyConfirmed && !companyId && (
-                <p className="flex items-center gap-1 text-xs text-[var(--tips-club-lime)]">
+                <p className="flex items-center gap-1 text-xs text-[--tips-club-lime]">
                   <Plus className="h-3 w-3" />
                   {t("newCompanyOnJoin")}
                 </p>
@@ -403,7 +403,7 @@ export default function JoinPage() {
             </>
           )}
         </div>
-        <p className="mt-4 flex items-center justify-center gap-2 text-xs text-[var(--tips-muted)]">
+        <p className="mt-4 flex items-center justify-center gap-2 text-xs text-[--tips-muted]">
           <Info className="h-3 w-3" />
           {t("oneAttempt")}
         </p>
