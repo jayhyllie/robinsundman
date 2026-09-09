@@ -2,6 +2,7 @@
 
 import { toast } from "sonner";
 
+import { useI18n } from "~/components/providers/i18n-provider";
 import {
   TipsButton,
   TipsGlassCard,
@@ -9,12 +10,13 @@ import {
 import { api } from "~/trpc/react";
 
 export default function SubscribersAdminPage() {
+  const { t } = useI18n();
   const subscribers = api.tips.marketingSubscribers.useQuery();
 
   function exportCsv() {
     const rows = subscribers.data ?? [];
     if (rows.length === 0) {
-      toast.error("Inga prenumeranter att exportera");
+      toast.error(t("tipsNoSubscribersExport"));
       return;
     }
     const header = "email,playerName,marketingConsentAt";
@@ -36,17 +38,17 @@ export default function SubscribersAdminPage() {
     a.download = `tips-newsletter-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success("CSV exporterad");
+    toast.success(t("tipsCsvExported"));
   }
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="tips-label">Export</p>
-          <h1 className="tips-display text-5xl">Newsletter consent</h1>
+          <p className="tips-label">{t("tipsExport")}</p>
+          <h1 className="tips-display text-5xl">{t("tipsNewsletterConsent")}</h1>
           <p className="mt-2 text-sm text-[var(--tips-muted)]">
-            Unika e-postadresser som godkänt nyhetsbrev och erbjudanden.
+            {t("tipsSubscribersHint")}
           </p>
         </div>
         <TipsButton
@@ -54,13 +56,13 @@ export default function SubscribersAdminPage() {
           onClick={exportCsv}
           disabled={!subscribers.data?.length}
         >
-          Export CSV
+          {t("tipsExportCsv")}
         </TipsButton>
       </div>
 
       <TipsGlassCard>
         <p className="tips-label mb-3">
-          {subscribers.data?.length ?? 0} subscribers
+          {subscribers.data?.length ?? 0} {t("tipsSubscribersCount")}
         </p>
         <div className="max-h-[28rem] space-y-2 overflow-auto">
           {subscribers.data?.map((s) => (
@@ -81,7 +83,7 @@ export default function SubscribersAdminPage() {
           ))}
           {(subscribers.data?.length ?? 0) === 0 ? (
             <p className="text-sm text-[var(--tips-muted)]">
-              Inga godkännanden ännu.
+              {t("tipsNoConsentsYet")}
             </p>
           ) : null}
         </div>

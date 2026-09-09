@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { useI18n } from "~/components/providers/i18n-provider";
 import {
   LogoUploadDropzone,
   TeamCrest,
@@ -14,6 +15,7 @@ import {
 import { api } from "~/trpc/react";
 
 export default function TeamsAdminPage() {
+  const { t } = useI18n();
   const utils = api.useUtils();
   const teams = api.tips.teamsList.useQuery();
   const create = api.tips.teamCreate.useMutation();
@@ -30,9 +32,9 @@ export default function TeamsAdminPage() {
     const needle = q.trim().toLowerCase();
     if (!needle) return teams.data ?? [];
     return (teams.data ?? []).filter(
-      (t) =>
-        t.name.toLowerCase().includes(needle) ||
-        t.shortName.toLowerCase().includes(needle),
+      (team) =>
+        team.name.toLowerCase().includes(needle) ||
+        team.shortName.toLowerCase().includes(needle),
     );
   }, [teams.data, q]);
 
@@ -47,14 +49,14 @@ export default function TeamsAdminPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="tips-label">Teams</p>
-          <h1 className="tips-display text-5xl">Team management</h1>
+          <p className="tips-label">{t("tipsTeams")}</p>
+          <h1 className="tips-display text-5xl">{t("tipsTeamManagement")}</h1>
         </div>
       </div>
 
       <TipsInput
-        label="Search"
-        placeholder="Filter teams…"
+        label={t("tipsSearch")}
+        placeholder={t("tipsFilterTeams")}
         value={q}
         onChange={(e) => setQ(e.target.value)}
       />
@@ -62,15 +64,15 @@ export default function TeamsAdminPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <TipsGlassCard className="space-y-4">
           <p className="tips-display text-2xl">
-            {editingId ? "Edit team" : "Create team"}
+            {editingId ? t("tipsEditTeam") : t("tipsCreateTeam")}
           </p>
           <TipsInput
-            label="Name"
+            label={t("tipsName")}
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
           <TipsInput
-            label="Short"
+            label={t("tipsShort")}
             value={shortName}
             onChange={(e) => setShortName(e.target.value)}
           />
@@ -87,42 +89,42 @@ export default function TeamsAdminPage() {
                       shortName,
                       logoUrl,
                     });
-                    toast.success("Updated");
+                    toast.success(t("tipsUpdated"));
                   } else {
                     await create.mutateAsync({ name, shortName, logoUrl });
-                    toast.success("Created");
+                    toast.success(t("tipsCreated"));
                   }
                   resetForm();
                   await utils.tips.teamsList.invalidate();
                 } catch (e) {
-                  toast.error(e instanceof Error ? e.message : "Failed");
+                  toast.error(e instanceof Error ? e.message : t("tipsFailed"));
                 }
               }}
             >
-              {editingId ? "Save" : "Create team"}
+              {editingId ? t("save") : t("tipsCreateTeam")}
             </TipsButton>
             {editingId ? (
               <TipsButton variant="secondary" onClick={resetForm}>
-                Cancel
+                {t("cancel")}
               </TipsButton>
             ) : null}
           </div>
         </TipsGlassCard>
 
         <div className="space-y-2">
-          {filtered.map((t) => (
+          {filtered.map((team) => (
             <TipsGlassCard
-              key={t.id}
+              key={team.id}
               className="flex items-center gap-3"
-              active={editingId === t.id}
+              active={editingId === team.id}
             >
-              <TeamCrest name={t.name} logoUrl={t.logoUrl} size="md" />
+              <TeamCrest name={team.name} logoUrl={team.logoUrl} size="md" />
               <div className="min-w-0 flex-1">
-                <p className="truncate font-bold">{t.name}</p>
-                <p className="text-xs text-[--tips-muted]">{t.shortName}</p>
+                <p className="truncate font-bold">{team.name}</p>
+                <p className="text-xs text-[--tips-muted]">{team.shortName}</p>
               </div>
-              {t.isHomeClub ? (
-                <TipsBadge status="LIVE">Home</TipsBadge>
+              {team.isHomeClub ? (
+                <TipsBadge status="LIVE">{t("tipsHome")}</TipsBadge>
               ) : (
                 <TipsButton
                   size="sm"
@@ -130,40 +132,45 @@ export default function TeamsAdminPage() {
                   disabled={update.isPending}
                   onClick={async () => {
                     try {
-                      await update.mutateAsync({ id: t.id, isHomeClub: true });
-                      toast.success("Set as home club");
+                      await update.mutateAsync({
+                        id: team.id,
+                        isHomeClub: true,
+                      });
+                      toast.success(t("tipsSetAsHomeClub"));
                       await utils.tips.teamsList.invalidate();
                     } catch (e) {
-                      toast.error(e instanceof Error ? e.message : "Failed");
+                      toast.error(
+                        e instanceof Error ? e.message : t("tipsFailed"),
+                      );
                     }
                   }}
                 >
-                  Set home
+                  {t("tipsSetHome")}
                 </TipsButton>
               )}
               <TipsButton
                 size="sm"
                 variant="secondary"
                 onClick={() => {
-                  setEditingId(t.id);
-                  setName(t.name);
-                  setShortName(t.shortName);
-                  setLogoUrl(t.logoUrl);
+                  setEditingId(team.id);
+                  setName(team.name);
+                  setShortName(team.shortName);
+                  setLogoUrl(team.logoUrl);
                 }}
               >
-                Edit
+                {t("edit")}
               </TipsButton>
-              {!t.isHomeClub ? (
+              {!team.isHomeClub ? (
                 <TipsButton
                   size="sm"
                   variant="tertiary"
                   onClick={async () => {
-                    await remove.mutateAsync({ id: t.id });
-                    toast.success("Deleted");
+                    await remove.mutateAsync({ id: team.id });
+                    toast.success(t("tipsDeleted"));
                     await utils.tips.teamsList.invalidate();
                   }}
                 >
-                  Delete
+                  {t("delete")}
                 </TipsButton>
               ) : null}
             </TipsGlassCard>

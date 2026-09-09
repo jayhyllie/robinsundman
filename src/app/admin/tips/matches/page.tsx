@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 
+import { useI18n } from "~/components/providers/i18n-provider";
 import {
   TeamCrest,
   TipsBadge,
@@ -11,17 +12,18 @@ import {
 import { api } from "~/trpc/react";
 
 export default function TipsMatchesPage() {
+  const { t } = useI18n();
   const matches = api.tips.matchesList.useQuery();
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="tips-label">Matches</p>
-          <h1 className="tips-display text-5xl">Match list</h1>
+          <p className="tips-label">{t("tipsMatches")}</p>
+          <h1 className="tips-display text-5xl">{t("tipsMatchList")}</h1>
         </div>
         <Link href="/admin/tips/matches/new">
-          <TipsButton>Create match</TipsButton>
+          <TipsButton>{t("tipsCreateMatch")}</TipsButton>
         </Link>
       </div>
 
@@ -37,7 +39,7 @@ export default function TipsMatchesPage() {
               <span className="tips-display text-2xl">
                 {m.homeTeam.shortName}
               </span>
-              <span className="text-[var(--tips-muted)]">vs</span>
+              <span className="text-[var(--tips-muted)]">{t("tipsVs")}</span>
               <span className="tips-display text-2xl">
                 {m.awayTeam.shortName}
               </span>
@@ -58,7 +60,7 @@ export default function TipsMatchesPage() {
               }
             />
             <span className="text-sm text-[var(--tips-muted)]">
-              {m.predictionCount} tips
+              {m.predictionCount} {t("tipsTipsCount")}
             </span>
             <span className="text-sm text-[var(--tips-muted)]">
               {new Date(m.puckDropAt).toLocaleString("sv-SE")}
@@ -68,13 +70,13 @@ export default function TipsMatchesPage() {
               m.homeScore == null ? (
                 <Link href={`/admin/tips/matches/${m.id}`}>
                   <TipsButton variant="gold" size="sm">
-                    Register result
+                    {t("tipsRegisterResult")}
                   </TipsButton>
                 </Link>
               ) : null}
               <Link href={`/admin/tips/matches/${m.id}`}>
                 <TipsButton variant="secondary" size="sm">
-                  Open
+                  {t("tipsOpen")}
                 </TipsButton>
               </Link>
             </div>
@@ -82,7 +84,7 @@ export default function TipsMatchesPage() {
         ))}
         {matches.data?.length === 0 ? (
           <TipsGlassCard>
-            <p className="text-[var(--tips-muted)]">No matches yet.</p>
+            <p className="text-[var(--tips-muted)]">{t("tipsNoMatchesYet")}</p>
           </TipsGlassCard>
         ) : null}
       </div>

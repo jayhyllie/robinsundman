@@ -1,6 +1,10 @@
+"use client";
+
 import { cva, type VariantProps } from "class-variance-authority";
 import type { ReactNode } from "react";
 
+import { useI18n } from "~/components/providers/i18n-provider";
+import type { TranslationKey } from "~/i18n/translations";
 import { cn } from "~/lib/utils";
 
 const tipsBadgeVariants = cva(
@@ -22,6 +26,18 @@ const tipsBadgeVariants = cva(
   },
 );
 
+const statusLabelKeys: Record<
+  NonNullable<VariantProps<typeof tipsBadgeVariants>["status"]>,
+  TranslationKey
+> = {
+  DRAFT: "tipsBadgeDraft",
+  OPEN: "tipsBadgeOpen",
+  CLOSED: "tipsBadgeClosed",
+  RESULT_REGISTERED: "tipsBadgeResult",
+  WINNER_PICKED: "tipsBadgeWinner",
+  LIVE: "tipsBadgeLive",
+};
+
 export function TipsBadge({
   className,
   status,
@@ -32,13 +48,9 @@ export function TipsBadge({
   children?: ReactNode;
   liveDot?: boolean;
 } & VariantProps<typeof tipsBadgeVariants>) {
+  const { t } = useI18n();
   const label =
-    children ??
-    (status === "RESULT_REGISTERED"
-      ? "Result"
-      : status === "WINNER_PICKED"
-        ? "Winner"
-        : status);
+    children ?? t(statusLabelKeys[status ?? "DRAFT"]);
 
   return (
     <span className={cn(tipsBadgeVariants({ status }), className)}>

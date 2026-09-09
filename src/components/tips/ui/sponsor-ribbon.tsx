@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 
+import { useI18n } from "~/components/providers/i18n-provider";
 import { cn } from "~/lib/utils";
 
 export function SponsorRibbon({
@@ -15,6 +18,8 @@ export function SponsorRibbon({
   primaryColor?: string | null;
   className?: string;
 }) {
+  const { t } = useI18n();
+
   return (
     <div
       className={cn(
@@ -48,7 +53,7 @@ export function SponsorRibbon({
         ) : null}
       </div>
       <span className="shrink-0 text-[10px] font-bold tracking-[0.14em] text-[var(--tips-trophy-gold)] uppercase">
-        Presented by
+        {t("tipsPresentedBy")}
       </span>
     </div>
   );
@@ -63,10 +68,12 @@ export function SponsorFooterLockup({
   logoUrl?: string | null;
   className?: string;
 }) {
+  const { t } = useI18n();
+
   return (
     <div className={cn("flex flex-col items-center gap-2", className)}>
       <span className="tips-label !text-[var(--tips-trophy-gold)]">
-        Presented by
+        {t("tipsPresentedBy")}
       </span>
       {logoUrl ? (
         <Image

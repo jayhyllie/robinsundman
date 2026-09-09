@@ -4,6 +4,7 @@ import { Check, Share2, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { useI18n } from "~/components/providers/i18n-provider";
 import { TipsScope } from "~/components/tips/tips-scope";
 import {
   CountdownBlocks,
@@ -32,6 +33,7 @@ function storageKey(slug: string) {
 }
 
 export function TipsMobileClient({ slug }: { slug: string }) {
+  const { t } = useI18n();
   const matchQuery = api.tips.matchBySlug.useQuery(
     { slug },
     { refetchInterval: 15_000 },
@@ -78,8 +80,8 @@ export function TipsMobileClient({ slug }: { slug: string }) {
 
   const title = useMemo(() => {
     if (!match) return "";
-    return `${match.homeTeam.shortName} vs ${match.awayTeam.shortName}`;
-  }, [match]);
+    return `${match.homeTeam.shortName} ${t("tipsVs")} ${match.awayTeam.shortName}`;
+  }, [match, t]);
 
   async function onSubmit(marketingConsent: boolean) {
     if (!match) return;
@@ -104,7 +106,7 @@ export function TipsMobileClient({ slug }: { slug: string }) {
       void matchQuery.refetch();
       void statsQuery.refetch();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Kunde inte spara tipset");
+      toast.error(e instanceof Error ? e.message : t("tipsSaveFailed"));
     }
   }
 
@@ -117,7 +119,7 @@ export function TipsMobileClient({ slug }: { slug: string }) {
   if (matchQuery.isLoading) {
     return (
       <TipsScope className="flex items-center justify-center">
-        <p className="tips-label">Loading…</p>
+        <p className="tips-label">{t("loading")}</p>
       </TipsScope>
     );
   }
@@ -126,7 +128,7 @@ export function TipsMobileClient({ slug }: { slug: string }) {
     return (
       <TipsScope className="flex items-center justify-center p-6">
         <TipsGlassCard className="max-w-sm text-center">
-          <p className="tips-display text-3xl">Match not found</p>
+          <p className="tips-display text-3xl">{t("tipsMatchNotFound")}</p>
         </TipsGlassCard>
       </TipsScope>
     );
@@ -147,13 +149,13 @@ export function TipsMobileClient({ slug }: { slug: string }) {
       {screen === "landing" ? (
         <div className="flex flex-1 flex-col gap-6 tips-animate-reveal">
           <div>
-            <p className="tips-label mb-2">Tonight&apos;s Prediction Challenge</p>
+            <p className="tips-label mb-2">{t("tipsTonightChallenge")}</p>
             <h1 className="tips-display text-5xl leading-none text-[--tips-rink-white]">
-              Predict
+              {t("tipsPredict")}
               <br />
-              the Final
+              {t("tipsTheFinal")}
               <br />
-              <span className="tips-ice-text">Score</span>
+              <span className="tips-ice-text">{t("tipsScore")}</span>
             </h1>
           </div>
 
@@ -169,8 +171,8 @@ export function TipsMobileClient({ slug }: { slug: string }) {
                   {match.homeTeam.shortName}
                 </span>
               </div>
-              <span className="tips-display text-2xl text-[--tips-muted]">
-                VS
+              <span className="tips-display text-2xl text-[--tips-muted] uppercase">
+                {t("tipsVs")}
               </span>
               <div className="flex flex-col items-center gap-2">
                 <TeamCrest
@@ -189,19 +191,19 @@ export function TipsMobileClient({ slug }: { slug: string }) {
           </TipsGlassCard>
 
           <div>
-            <p className="tips-label mb-2">Puck drop</p>
+            <p className="tips-label mb-2">{t("tipsPuckDrop")}</p>
             <CountdownBlocks target={match.puckDropAt} compact />
           </div>
 
           <div className="flex items-center justify-between">
             <TipsBadge status="LIVE" liveDot>
-              LIVE
+              {t("tipsBadgeLive")}
             </TipsBadge>
             <p className="text-sm text-[--tips-muted]">
               <span className="tips-ice-text font-bold tabular-nums">
                 {count.toLocaleString("sv-SE")}
               </span>{" "}
-              fans tipped
+              {t("tipsFansTipped")}
             </p>
           </div>
 
@@ -211,7 +213,7 @@ export function TipsMobileClient({ slug }: { slug: string }) {
             onClick={() => setScreen("form")}
             disabled={isClosed}
           >
-            Predict Result
+            {t("tipsPredictResult")}
           </TipsButton>
         </div>
       ) : null}
@@ -223,19 +225,19 @@ export function TipsMobileClient({ slug }: { slug: string }) {
             className="tips-label self-start text-[--tips-muted]!"
             onClick={() => setScreen("landing")}
           >
-            ← Back
+            {t("tipsBack")}
           </button>
-          <h1 className="tips-display text-4xl">Your tip</h1>
+          <h1 className="tips-display text-4xl">{t("tipsYourTip")}</h1>
 
           <TipsInput
-            label="Name"
-            placeholder="Förnamn Efternamn"
+            label={t("tipsName")}
+            placeholder={t("tipsNamePlaceholder")}
             value={playerName}
             onChange={(e) => setPlayerName(e.target.value)}
           />
           <TipsInput
-            label="E-post"
-            placeholder="namn@foretag.se"
+            label={t("tipsEmail")}
+            placeholder={t("tipsEmailPlaceholder")}
             type="email"
             inputMode="email"
             autoComplete="email"
@@ -244,7 +246,7 @@ export function TipsMobileClient({ slug }: { slug: string }) {
           />
 
           <TipsGlassCard className="text-center">
-            <p className="tips-label mb-4 text-center">Final Score</p>
+            <p className="tips-label mb-4 text-center">{t("tipsFinalScore")}</p>
             <div className="flex items-center justify-center gap-3">
               <ScoreStepper
                 label={match.homeTeam.shortName}
@@ -261,7 +263,7 @@ export function TipsMobileClient({ slug }: { slug: string }) {
               />
             </div>
             <p className="tips-label mt-6 mb-2 text-center text-[--tips-muted]!">
-              Quick picks
+              {t("tipsQuickPicks")}
             </p>
             <QuickPickChips
               selected={{ home: homeGoals, away: awayGoals }}
@@ -279,7 +281,7 @@ export function TipsMobileClient({ slug }: { slug: string }) {
             disabled={!canOpenConsent}
             onClick={() => setConsentOpen(true)}
           >
-            Submit Prediction
+            {t("tipsSubmitPrediction")}
           </TipsButton>
         </div>
       ) : null}
@@ -292,17 +294,15 @@ export function TipsMobileClient({ slug }: { slug: string }) {
           aria-labelledby="marketing-consent-title"
         >
           <TipsGlassCard className="w-full max-w-md tips-animate-reveal space-y-4">
-            <p className="tips-label">Nyhetsbrev</p>
+            <p className="tips-label">{t("tipsNewsletter")}</p>
             <h2
               id="marketing-consent-title"
               className="tips-display text-3xl leading-none"
             >
-              Vill du få erbjudanden?
+              {t("tipsWantOffers")}
             </h2>
             <p className="text-sm text-[--tips-muted]">
-              Godkänner du att vi använder din e-postadress för framtida
-              nyhetsbrev och erbjudanden från klubben och partners? Du kan
-              tippa oavsett vad du svarar.
+              {t("tipsConsentBody")}
             </p>
             <div className="flex flex-col gap-3 pt-2">
               <TipsButton
@@ -311,7 +311,7 @@ export function TipsMobileClient({ slug }: { slug: string }) {
                 disabled={submit.isPending}
                 onClick={() => void onSubmit(true)}
               >
-                {submit.isPending ? "Skickar…" : "Ja, jag godkänner"}
+                {submit.isPending ? t("tipsSending") : t("tipsConsentYes")}
               </TipsButton>
               <TipsButton
                 size="lg"
@@ -320,7 +320,7 @@ export function TipsMobileClient({ slug }: { slug: string }) {
                 disabled={submit.isPending}
                 onClick={() => void onSubmit(false)}
               >
-                Nej tack, bara tippa
+                {t("tipsConsentNo")}
               </TipsButton>
               <TipsButton
                 variant="tertiary"
@@ -328,7 +328,7 @@ export function TipsMobileClient({ slug }: { slug: string }) {
                 disabled={submit.isPending}
                 onClick={() => setConsentOpen(false)}
               >
-                Avbryt
+                {t("cancel")}
               </TipsButton>
             </div>
           </TipsGlassCard>
@@ -341,8 +341,8 @@ export function TipsMobileClient({ slug }: { slug: string }) {
             <Check className="size-8 text-[--tips-ice-highlight]" />
           </div>
           <div>
-            <p className="tips-label mb-2">You&apos;re in</p>
-            <h1 className="tips-display text-5xl">Prediction locked</h1>
+            <p className="tips-label mb-2">{t("tipsYoureIn")}</p>
+            <h1 className="tips-display text-5xl">{t("tipsPredictionLocked")}</h1>
           </div>
           <TipsGlassCard className="w-full">
             <p className="text-sm text-[--tips-muted]">{stored.playerName}</p>
@@ -362,16 +362,19 @@ export function TipsMobileClient({ slug }: { slug: string }) {
             className="w-full"
             onClick={() => {
               void navigator.share?.({
-                title: "ÖIK Prediction",
-                text: `Jag tippade ${stored.homeGoals}–${stored.awayGoals}!`,
+                title: t("tipsShareTitle"),
+                text: t("tipsShareText").replace(
+                  "{score}",
+                  `${stored.homeGoals}–${stored.awayGoals}`,
+                ),
                 url: window.location.href,
               }).catch(() => {
                 void navigator.clipboard.writeText(window.location.href);
-                toast.success("Länk kopierad");
+                toast.success(t("tipsLinkCopied"));
               });
             }}
           >
-            <Share2 className="size-4" /> Share
+            <Share2 className="size-4" /> {t("tipsShare")}
           </TipsButton>
         </div>
       ) : null}
@@ -382,8 +385,8 @@ export function TipsMobileClient({ slug }: { slug: string }) {
             <X className="size-7 text-[--tips-muted]" />
           </div>
           <div>
-            <p className="tips-label mb-2">Closed</p>
-            <h1 className="tips-display text-5xl">Tipping is now closed</h1>
+            <p className="tips-label mb-2">{t("tipsClosed")}</p>
+            <h1 className="tips-display text-5xl">{t("tipsTippingClosed")}</h1>
           </div>
           <TipsGlassCard>
             <div className="flex items-center justify-center gap-4">
@@ -404,11 +407,11 @@ export function TipsMobileClient({ slug }: { slug: string }) {
               />
             </div>
             <p className="mt-4 text-center text-sm text-[--tips-muted]">
-              {count.toLocaleString("sv-SE")} predictions submitted
+              {count.toLocaleString("sv-SE")} {t("tipsPredictionsSubmitted")}
             </p>
           </TipsGlassCard>
           <TipsButton variant="secondary" className="mt-auto w-full" disabled>
-            Next home game soon
+            {t("tipsNextHomeGameSoon")}
           </TipsButton>
         </div>
       ) : null}

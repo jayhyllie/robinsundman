@@ -2,6 +2,7 @@
 
 import { QRCodeSVG } from "qrcode.react";
 
+import { useI18n } from "~/components/providers/i18n-provider";
 import { TipsScope } from "~/components/tips/tips-scope";
 import {
   CountdownBlocks,
@@ -13,6 +14,7 @@ import {
 import { api } from "~/trpc/react";
 
 export function ArenaClient({ slug }: { slug: string }) {
+  const { t } = useI18n();
   const matchQuery = api.tips.matchBySlug.useQuery(
     { slug },
     { refetchInterval: 10_000 },
@@ -30,7 +32,7 @@ export function ArenaClient({ slug }: { slug: string }) {
   if (!match) {
     return (
       <TipsScope className="flex items-center justify-center">
-        <p className="tips-label">Loading arena…</p>
+        <p className="tips-label">{t("tipsLoadingArena")}</p>
       </TipsScope>
     );
   }
@@ -39,12 +41,12 @@ export function ArenaClient({ slug }: { slug: string }) {
     <TipsScope className="flex min-h-svh flex-col px-8 py-8 lg:px-14 lg:py-10">
       <div className="mb-6 flex items-center justify-between">
         <TipsBadge status="LIVE" liveDot>
-          LIVE TIPPING
+          {t("tipsLiveTipping")}
         </TipsBadge>
         {match.sponsor ? (
           <div className="flex items-center gap-3">
             <span className="tips-label text-(--tips-trophy-gold)!">
-              Presented by
+              {t("tipsPresentedBy")}
             </span>
             <span className="tips-display text-2xl tips-gold-text">
               {match.sponsor.name}
@@ -56,11 +58,11 @@ export function ArenaClient({ slug }: { slug: string }) {
       <div className="grid flex-1 gap-10 lg:grid-cols-2 lg:items-center">
         <div className="tips-animate-reveal space-y-8">
           <h1 className="tips-display text-6xl leading-[0.9] md:text-7xl lg:text-8xl">
-            Scan.
+            {t("tipsScan")}
             <br />
-            Predict.
+            {t("tipsPredictDot")}
             <br />
-            <span className="tips-ice-text">Win.</span>
+            <span className="tips-ice-text">{t("tipsWin")}</span>
           </h1>
 
           <div className="flex items-center gap-6">
@@ -72,11 +74,11 @@ export function ArenaClient({ slug }: { slug: string }) {
             <div>
               <p className="tips-display text-4xl md:text-5xl">
                 {match.homeTeam.shortName}
-                <span className="mx-3 text-[--tips-muted]">vs</span>
+                <span className="mx-3 text-[--tips-muted]">{t("tipsVs")}</span>
                 {match.awayTeam.shortName}
               </p>
               <p className="mt-1 text-sm text-[--tips-muted]">
-                Final score prediction · Puck drop countdown
+                {t("tipsFinalScorePrediction")}
               </p>
             </div>
             <TeamCrest
@@ -87,7 +89,7 @@ export function ArenaClient({ slug }: { slug: string }) {
           </div>
 
           <div>
-            <p className="tips-label mb-3">Puck drop</p>
+            <p className="tips-label mb-3">{t("tipsPuckDrop")}</p>
             <CountdownBlocks target={match.puckDropAt} className="max-w-xl" />
           </div>
 
@@ -95,7 +97,7 @@ export function ArenaClient({ slug }: { slug: string }) {
             <span className="tips-display tips-ice-text text-4xl tabular-nums">
               {count.toLocaleString("sv-SE")}
             </span>{" "}
-            fans have already tipped
+            {t("tipsFansAlreadyTipped")}
           </p>
         </div>
 
@@ -103,7 +105,7 @@ export function ArenaClient({ slug }: { slug: string }) {
           <div className="rounded-[--tips-radius-md] bg-white p-5">
             <QRCodeSVG value={joinUrl} size={600} level="M" />
           </div>
-          <p className="tips-label text-center">Scan to tip on your phone</p>
+          <p className="tips-label text-center">{t("tipsScanToTip")}</p>
           {match.sponsor ? (
             <SponsorFooterLockup
               name={match.sponsor.name}

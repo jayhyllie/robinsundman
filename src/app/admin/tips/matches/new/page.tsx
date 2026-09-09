@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { useI18n } from "~/components/providers/i18n-provider";
 import {
   TeamCrest,
   TipsButton,
@@ -15,14 +16,15 @@ import {
 import { api } from "~/trpc/react";
 
 export default function CreateMatchPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const teams = api.tips.teamsList.useQuery();
   const sponsors = api.tips.sponsorsList.useQuery();
   const create = api.tips.matchCreate.useMutation();
 
-  const home = teams.data?.find((t) => t.isHomeClub);
+  const home = teams.data?.find((team) => team.isHomeClub);
   const awayTeams = useMemo(
-    () => teams.data?.filter((t) => !t.isHomeClub) ?? [],
+    () => teams.data?.filter((team) => !team.isHomeClub) ?? [],
     [teams.data],
   );
 
@@ -48,13 +50,13 @@ export default function CreateMatchPage() {
     const q = query.trim().toLowerCase();
     if (!q) return awayTeams;
     return awayTeams.filter(
-      (t) =>
-        t.name.toLowerCase().includes(q) ||
-        t.shortName.toLowerCase().includes(q),
+      (team) =>
+        team.name.toLowerCase().includes(q) ||
+        team.shortName.toLowerCase().includes(q),
     );
   }, [awayTeams, query]);
 
-  const away = awayTeams.find((t) => t.id === awayTeamId);
+  const away = awayTeams.find((team) => team.id === awayTeamId);
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   const previewSlug = home && away
     ? `${home.shortName}-vs-${away.shortName}`.toLowerCase()
@@ -70,24 +72,24 @@ export default function CreateMatchPage() {
         puckDropAt: new Date(puckDropLocal),
         publish,
       });
-      toast.success(publish ? "Match published" : "Draft saved");
+      toast.success(publish ? t("tipsMatchPublished") : t("tipsDraftSaved"));
       router.push(`/admin/tips/matches/${match.id}`);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed");
+      toast.error(e instanceof Error ? e.message : t("tipsFailed"));
     }
   }
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       <div>
-        <p className="tips-label">Create</p>
-        <h1 className="tips-display text-5xl">New match</h1>
+        <p className="tips-label">{t("tipsCreate")}</p>
+        <h1 className="tips-display text-5xl">{t("tipsNewMatch")}</h1>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="space-y-4">
           <TipsGlassCard>
-            <p className="tips-label mb-3">Home (locked)</p>
+            <p className="tips-label mb-3">{t("tipsHomeLocked")}</p>
             {home ? (
               <div className="flex items-center gap-3">
                 <TeamCrest
@@ -97,17 +99,17 @@ export default function CreateMatchPage() {
                 />
                 <div>
                   <p className="tips-display text-2xl">{home.name}</p>
-                  <p className="text-xs text-[--tips-muted]">Home club</p>
+                  <p className="text-xs text-[--tips-muted]">{t("tipsHomeClub")}</p>
                 </div>
               </div>
             ) : (
               <div className="space-y-2">
                 <p className="text-sm text-[--tips-muted]">
-                  No home club configured. Mark one under Teams first.
+                  {t("tipsNoHomeClub")}
                 </p>
                 <Link href="/admin/tips/teams">
                   <TipsButton variant="secondary" size="sm">
-                    Open teams
+                    {t("tipsOpenTeams")}
                   </TipsButton>
                 </Link>
               </div>
@@ -115,32 +117,32 @@ export default function CreateMatchPage() {
           </TipsGlassCard>
 
           <TipsInput
-            label="Away team search"
-            placeholder="Search opponent…"
+            label={t("tipsAwayTeamSearch")}
+            placeholder={t("tipsSearchOpponent")}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
           <div className="max-h-48 space-y-1 overflow-auto">
-            {filtered.map((t) => (
+            {filtered.map((team) => (
               <button
-                key={t.id}
+                key={team.id}
                 type="button"
-                onClick={() => setAwayTeamId(t.id)}
+                onClick={() => setAwayTeamId(team.id)}
                 className={`tips-glass flex w-full items-center gap-3 px-3 py-2 text-left transition ${
-                  awayTeamId === t.id ? "tips-glass-active" : ""
+                  awayTeamId === team.id ? "tips-glass-active" : ""
                 }`}
               >
-                <TeamCrest name={t.name} logoUrl={t.logoUrl} size="sm" />
-                <span className="font-bold">{t.name}</span>
+                <TeamCrest name={team.name} logoUrl={team.logoUrl} size="sm" />
+                <span className="font-bold">{team.name}</span>
                 <span className="ml-auto text-xs text-[--tips-muted]">
-                  {t.shortName}
+                  {team.shortName}
                 </span>
               </button>
             ))}
           </div>
 
           <label className="flex flex-col gap-2">
-            <span className="tips-label">Puck drop</span>
+            <span className="tips-label">{t("tipsPuckDrop")}</span>
             <input
               type="datetime-local"
               value={puckDropLocal}
@@ -150,13 +152,13 @@ export default function CreateMatchPage() {
           </label>
 
           <label className="flex flex-col gap-2">
-            <span className="tips-label">Sponsor</span>
+            <span className="tips-label">{t("tipsSponsor")}</span>
             <select
               value={sponsorId}
               onChange={(e) => setSponsorId(e.target.value)}
               className="h-12 rounded-[--tips-radius-sm] border border-[--tips-glass-border] bg-[--tips-glass-bg] px-4 text-[--tips-rink-white] outline-none"
             >
-              <option value="">None</option>
+              <option value="">{t("tipsNone")}</option>
               {sponsors.data?.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.name}
@@ -170,23 +172,23 @@ export default function CreateMatchPage() {
               disabled={create.isPending || !awayTeamId || !home}
               onClick={() => void onCreate(true)}
             >
-              Publish & open
+              {t("tipsPublishAndOpen")}
             </TipsButton>
             <TipsButton
               variant="secondary"
               disabled={create.isPending || !awayTeamId || !home}
               onClick={() => void onCreate(false)}
             >
-              Save draft
+              {t("saveDraft")}
             </TipsButton>
             <Link href="/admin/tips/matches">
-              <TipsButton variant="tertiary">Cancel</TipsButton>
+              <TipsButton variant="tertiary">{t("cancel")}</TipsButton>
             </Link>
           </div>
         </div>
 
         <TipsGlassCard className="flex flex-col items-center gap-4">
-          <p className="tips-label">Public QR preview</p>
+          <p className="tips-label">{t("tipsPublicQrPreview")}</p>
           <div className="rounded-[--tips-radius-md] bg-white p-4">
             <QRCodeSVG value={previewUrl} size={200} />
           </div>
@@ -194,7 +196,7 @@ export default function CreateMatchPage() {
             {previewUrl}
           </p>
           <p className="text-center text-xs text-[--tips-muted]">
-            Final slug is assigned on create
+            {t("tipsFinalSlugOnCreate")}
           </p>
         </TipsGlassCard>
       </div>

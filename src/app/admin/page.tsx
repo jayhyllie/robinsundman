@@ -5,11 +5,11 @@ export default function AdminHubPage() {
     <main className="tips-scope tips-bg relative flex min-h-svh flex-col items-center justify-center overflow-hidden px-6 text-center">
       <div className="relative z-10 mx-auto max-w-lg space-y-6 tips-animate-reveal">
         <p className="tips-label">Sundman Events</p>
-        <h1 className="tips-display text-5xl text-[var(--tips-rink-white)] md:text-6xl">
+        <h1 className="tips-display text-5xl text-[--tips-rink-white] md:text-6xl">
           Admin
         </h1>
-        <p className="text-sm text-[var(--tips-muted)] md:text-base">
-          Choose which experience to manage.
+        <p className="text-sm text-[--tips-muted] md:text-base">
+          Välj vilken upplevelse du vill hantera.
         </p>
         <div className="flex flex-col items-center gap-3 pt-2 sm:flex-row sm:justify-center">
           <TipsLinkButton href="/admin/quiz" size="lg">

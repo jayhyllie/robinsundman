@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { useI18n } from "~/components/providers/i18n-provider";
 import {
   LogoUploadDropzone,
   TipsButton,
@@ -12,6 +13,7 @@ import {
 import { api } from "~/trpc/react";
 
 export default function SponsorsAdminPage() {
+  const { t } = useI18n();
   const utils = api.useUtils();
   const sponsors = api.tips.sponsorsList.useQuery();
   const create = api.tips.sponsorCreate.useMutation();
@@ -39,8 +41,8 @@ export default function SponsorsAdminPage() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="tips-label">Sponsors</p>
-        <h1 className="tips-display text-5xl">Sponsor management</h1>
+        <p className="tips-label">{t("tipsSponsors")}</p>
+        <h1 className="tips-display text-5xl">{t("tipsSponsorManagement")}</h1>
       </div>
 
       <TipsGlassCard className="space-y-4">
@@ -49,7 +51,7 @@ export default function SponsorsAdminPage() {
           className="tips-display w-full text-left text-2xl"
           onClick={() => setExpanded(expanded === "new" ? null : "new")}
         >
-          {editingId ? "Edit sponsor" : "Create sponsor"}{" "}
+          {editingId ? t("tipsEditSponsor") : t("tipsCreateSponsor")}{" "}
           <span className="text-[--tips-muted]">
             {expanded === "new" ? "−" : "+"}
           </span>
@@ -57,17 +59,17 @@ export default function SponsorsAdminPage() {
         {expanded === "new" ? (
           <>
             <TipsInput
-              label="Name"
+              label={t("tipsName")}
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
             <TipsInput
-              label="Campaign message"
+              label={t("tipsCampaignMessage")}
               value={campaignText}
               onChange={(e) => setCampaignText(e.target.value)}
             />
             <label className="flex flex-col gap-2">
-              <span className="tips-label">Primary color</span>
+              <span className="tips-label">{t("tipsPrimaryColor")}</span>
               <input
                 type="color"
                 value={primaryColor}
@@ -83,7 +85,7 @@ export default function SponsorsAdminPage() {
                 onChange={(e) => setIsActive(e.target.checked)}
                 className="size-4 accent-[--tips-club-lime]"
               />
-              Show on all screens
+              {t("tipsShowOnAllScreens")}
             </label>
             <div className="flex gap-2">
               <TipsButton
@@ -99,7 +101,7 @@ export default function SponsorsAdminPage() {
                         logoUrl,
                         isActive,
                       });
-                      toast.success("Updated");
+                      toast.success(t("tipsUpdated"));
                     } else {
                       await create.mutateAsync({
                         name,
@@ -108,20 +110,22 @@ export default function SponsorsAdminPage() {
                         logoUrl,
                         isActive,
                       });
-                      toast.success("Created");
+                      toast.success(t("tipsCreated"));
                     }
                     reset();
                     await utils.tips.sponsorsList.invalidate();
                   } catch (e) {
-                    toast.error(e instanceof Error ? e.message : "Failed");
+                    toast.error(
+                      e instanceof Error ? e.message : t("tipsFailed"),
+                    );
                   }
                 }}
               >
-                {editingId ? "Save" : "Create"}
+                {editingId ? t("save") : t("tipsCreate")}
               </TipsButton>
               {editingId ? (
                 <TipsButton variant="secondary" onClick={reset}>
-                  Cancel
+                  {t("cancel")}
                 </TipsButton>
               ) : null}
             </div>
@@ -148,11 +152,11 @@ export default function SponsorsAdminPage() {
                 <p className="truncate text-xs text-[--tips-muted]">
                   {s.campaignText && s.campaignText.length > 0
                     ? s.campaignText
-                    : "No campaign text"}
+                    : t("tipsNoCampaignText")}
                 </p>
               </div>
               <span className="text-xs font-bold tracking-wide uppercase text-[--tips-muted]">
-                {s.isActive ? "Active" : "Off"}
+                {s.isActive ? t("tipsActive") : t("tipsOff")}
               </span>
             </button>
             {expanded === s.id ? (
@@ -170,7 +174,7 @@ export default function SponsorsAdminPage() {
                     setExpanded("new");
                   }}
                 >
-                  Edit
+                  {t("edit")}
                 </TipsButton>
                 <TipsButton
                   size="sm"
@@ -183,18 +187,18 @@ export default function SponsorsAdminPage() {
                     await utils.tips.sponsorsList.invalidate();
                   }}
                 >
-                  {s.isActive ? "Hide" : "Show on screens"}
+                  {s.isActive ? t("tipsHide") : t("tipsShowOnScreens")}
                 </TipsButton>
                 <TipsButton
                   size="sm"
                   variant="tertiary"
                   onClick={async () => {
                     await remove.mutateAsync({ id: s.id });
-                    toast.success("Deleted");
+                    toast.success(t("tipsDeleted"));
                     await utils.tips.sponsorsList.invalidate();
                   }}
                 >
-                  Delete
+                  {t("delete")}
                 </TipsButton>
               </div>
             ) : null}

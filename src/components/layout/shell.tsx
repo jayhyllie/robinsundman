@@ -108,7 +108,7 @@ function PublicNav() {
                   onClick={() => {
                     if (isMobile) setOpenMobile(false);
                   }}
-                  className="uppercase tracking-wide data-active:bg-[var(--tips-club-lime)] data-active:text-[var(--tips-arena-black)] data-active:hover:bg-[var(--tips-club-lime)]/90 data-active:hover:text-[var(--tips-arena-black)]"
+                  className="uppercase tracking-wide data-active:bg-[--tips-club-lime] data-active:text-[--tips-arena-black] data-active:hover:bg-[--tips-club-lime]/90 data-active:hover:text-[--tips-arena-black]"
                 >
                   <Icon />
                   <span>{label}</span>
@@ -165,7 +165,7 @@ export function SidebarShell({ children }: { children: React.ReactNode }) {
         >
           <PublicSidebar />
           <SidebarInset className="min-h-0 overflow-hidden bg-transparent">
-            <header className="flex h-14 shrink-0 items-center gap-2 border-b border-[var(--tips-glass-border)] px-4">
+            <header className="flex h-14 shrink-0 items-center gap-2 border-b border-[--tips-glass-border] px-4">
               <SidebarTrigger className="-ml-1" />
             </header>
             <main className="min-h-0 flex-1 overflow-y-auto">

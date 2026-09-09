@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 
+import { useI18n } from "~/components/providers/i18n-provider";
 import {
   TipsBadge,
   TipsButton,
@@ -12,6 +13,7 @@ import {
 import { api } from "~/trpc/react";
 
 export default function WinnerAdminPage() {
+  const { t } = useI18n();
   const params = useParams<{ id: string }>();
   const id = params.id;
   const utils = api.useUtils();
@@ -30,18 +32,18 @@ export default function WinnerAdminPage() {
     ]);
   }
 
-  if (!match) return <p className="tips-label">Loading…</p>;
+  if (!match) return <p className="tips-label">{t("loading")}</p>;
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
-        <p className="tips-label">Winner</p>
+        <p className="tips-label">{t("tipsWinner")}</p>
         <h1 className="tips-display text-5xl">
-          {match.homeTeam.shortName} vs {match.awayTeam.shortName}
+          {match.homeTeam.shortName} {t("tipsVs")} {match.awayTeam.shortName}
         </h1>
         <p className="mt-1 text-sm text-[var(--tips-muted)]">
-          Result {match.homeScore ?? "–"}–{match.awayScore ?? "–"} ·{" "}
-          {correct.data?.length ?? 0} exact tips
+          {t("tipsResult")} {match.homeScore ?? "–"}–{match.awayScore ?? "–"} ·{" "}
+          {correct.data?.length ?? 0} {t("tipsExactTips")}
         </p>
       </div>
 
@@ -55,11 +57,11 @@ export default function WinnerAdminPage() {
             {winner.prediction.homeGoals}–{winner.prediction.awayGoals}
           </p>
           <p className="mt-2 text-sm text-[var(--tips-muted)]">
-            Drawn {new Date(winner.drawnAt).toLocaleString("sv-SE")}
+            {t("tipsDrawn")} {new Date(winner.drawnAt).toLocaleString("sv-SE")}
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
             <Link href="/tips/arena/live/winner" target="_blank">
-              <TipsButton variant="gold">Show on Jumbotron</TipsButton>
+              <TipsButton variant="gold">{t("tipsShowOnJumbotron")}</TipsButton>
             </Link>
             <TipsButton
               variant="secondary"
@@ -67,24 +69,24 @@ export default function WinnerAdminPage() {
               onClick={async () => {
                 try {
                   await redraw.mutateAsync({ matchId: id });
-                  toast.success("New winner drawn");
+                  toast.success(t("tipsNewWinnerDrawn"));
                   await refresh();
                 } catch (e) {
                   toast.error(
-                    e instanceof Error ? e.message : "Redraw failed",
+                    e instanceof Error ? e.message : t("tipsRedrawFailed"),
                   );
                 }
               }}
             >
-              Draw again
+              {t("tipsDrawAgain")}
             </TipsButton>
           </div>
         </TipsGlassCard>
       ) : (
         <TipsGlassCard>
-          <p className="tips-display text-3xl">Draw pool</p>
+          <p className="tips-display text-3xl">{t("tipsDrawPool")}</p>
           <p className="mt-2 text-sm text-[var(--tips-muted)]">
-            Random winner among exact score predictions.
+            {t("tipsDrawPoolHint")}
           </p>
           <TipsButton
             className="mt-5"
@@ -97,20 +99,22 @@ export default function WinnerAdminPage() {
             onClick={async () => {
               try {
                 await draw.mutateAsync({ matchId: id });
-                toast.success("Winner drawn");
+                toast.success(t("tipsWinnerDrawn"));
                 await refresh();
               } catch (e) {
-                toast.error(e instanceof Error ? e.message : "Draw failed");
+                toast.error(
+                  e instanceof Error ? e.message : t("tipsDrawFailed"),
+                );
               }
             }}
           >
-            Draw winner
+            {t("tipsDrawWinner")}
           </TipsButton>
         </TipsGlassCard>
       )}
 
       <TipsGlassCard>
-        <p className="tips-label mb-3">Exact predictions</p>
+        <p className="tips-label mb-3">{t("tipsExactPredictions")}</p>
         <div className="max-h-80 space-y-2 overflow-auto">
           {correct.data?.map((p) => (
             <div
@@ -123,14 +127,14 @@ export default function WinnerAdminPage() {
           ))}
           {(correct.data?.length ?? 0) === 0 ? (
             <p className="text-sm text-[var(--tips-muted)]">
-              No exact tips yet — register the result first.
+              {t("tipsNoExactTipsYet")}
             </p>
           ) : null}
         </div>
       </TipsGlassCard>
 
       <Link href={`/admin/tips/matches/${id}`}>
-        <TipsButton variant="tertiary">← Back to match</TipsButton>
+        <TipsButton variant="tertiary">{t("tipsBackToMatch")}</TipsButton>
       </Link>
     </div>
   );

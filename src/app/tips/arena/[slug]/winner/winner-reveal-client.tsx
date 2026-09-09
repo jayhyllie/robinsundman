@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "~/components/providers/i18n-provider";
 import { TipsScope } from "~/components/tips/tips-scope";
 import {
   SponsorFooterLockup,
@@ -10,6 +11,7 @@ import {
 import { api } from "~/trpc/react";
 
 export function WinnerRevealClient({ slug }: { slug: string }) {
+  const { t } = useI18n();
   const query = api.tips.winnerBySlug.useQuery(
     { slug },
     { refetchInterval: 5_000 },
@@ -19,7 +21,7 @@ export function WinnerRevealClient({ slug }: { slug: string }) {
   if (!match) {
     return (
       <TipsScope className="flex items-center justify-center">
-        <p className="tips-label">Loading…</p>
+        <p className="tips-label">{t("loading")}</p>
       </TipsScope>
     );
   }
@@ -29,7 +31,7 @@ export function WinnerRevealClient({ slug }: { slug: string }) {
   return (
     <TipsScope className="flex min-h-svh flex-col items-center justify-center px-6 py-10 text-center">
       <div className="tips-animate-reveal flex w-full max-w-4xl flex-col items-center gap-8">
-        <TipsBadge status="WINNER_PICKED">Tonight&apos;s Winner</TipsBadge>
+        <TipsBadge status="WINNER_PICKED">{t("tipsTonightsWinner")}</TipsBadge>
 
         <div className="flex items-center gap-4">
           <TeamCrest
@@ -38,7 +40,7 @@ export function WinnerRevealClient({ slug }: { slug: string }) {
             size="md"
           />
           <span className="tips-display text-2xl text-[var(--tips-muted)]">
-            {match.homeTeam.shortName} vs {match.awayTeam.shortName}
+            {match.homeTeam.shortName} {t("tipsVs")} {match.awayTeam.shortName}
           </span>
           <TeamCrest
             name={match.awayTeam.name}
@@ -55,14 +57,14 @@ export function WinnerRevealClient({ slug }: { slug: string }) {
 
             <TipsGlassCard className="w-full max-w-lg tips-animate-glow">
               <p className="tips-label mb-2 !text-[var(--tips-trophy-gold)]">
-                Predicted exact score
+                {t("tipsPredictedExactScore")}
               </p>
               <p className="tips-display text-7xl tips-ice-text md:text-8xl">
                 {winner.prediction.homeGoals}–{winner.prediction.awayGoals}
               </p>
               {match.homeScore != null && match.awayScore != null ? (
                 <p className="mt-3 text-sm text-[var(--tips-muted)]">
-                  Final result {match.homeScore}–{match.awayScore}
+                  {t("tipsFinalResult")} {match.homeScore}–{match.awayScore}
                 </p>
               ) : null}
             </TipsGlassCard>
@@ -72,17 +74,17 @@ export function WinnerRevealClient({ slug }: { slug: string }) {
                 <span className="tips-ice-text font-bold tabular-nums">
                   {match.predictionCount.toLocaleString("sv-SE")}
                 </span>{" "}
-                tips
+                {t("tipsTipsCount")}
               </span>
               <span className="text-[var(--tips-glass-border)]">·</span>
-              <span>Exact score draw</span>
+              <span>{t("tipsExactScoreDraw")}</span>
             </div>
           </>
         ) : (
           <TipsGlassCard className="w-full max-w-lg">
-            <p className="tips-display text-4xl">Waiting for draw…</p>
+            <p className="tips-display text-4xl">{t("tipsWaitingForDraw")}</p>
             <p className="mt-3 text-sm text-[var(--tips-muted)]">
-              Winner will appear here once selected in admin.
+              {t("tipsWinnerWillAppear")}
             </p>
           </TipsGlassCard>
         )}

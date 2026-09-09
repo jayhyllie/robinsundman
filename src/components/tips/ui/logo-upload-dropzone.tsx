@@ -4,6 +4,7 @@ import { Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { useI18n } from "~/components/providers/i18n-provider";
 import { cn } from "~/lib/utils";
 
 export function LogoUploadDropzone({
@@ -15,16 +16,17 @@ export function LogoUploadDropzone({
   onUploaded: (url: string) => void;
   className?: string;
 }) {
+  const { t } = useI18n();
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
   async function handleFile(file: File) {
     if (!["image/png", "image/svg+xml"].includes(file.type)) {
-      toast.error("Only PNG or SVG allowed");
+      toast.error(t("tipsOnlyPngSvg"));
       return;
     }
     if (file.size > 2 * 1024 * 1024) {
-      toast.error("Max 2MB");
+      toast.error(t("tipsMax2Mb"));
       return;
     }
     setUploading(true);
@@ -39,13 +41,13 @@ export function LogoUploadDropzone({
         const data = (await res.json().catch(() => null)) as {
           error?: string;
         } | null;
-        throw new Error(data?.error ?? "Upload failed");
+        throw new Error(data?.error ?? t("tipsUploadFailed"));
       }
       const data = (await res.json()) as { url: string };
       onUploaded(data.url);
-      toast.success("Logo uploaded");
+      toast.success(t("tipsLogoUploaded"));
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Upload failed");
+      toast.error(e instanceof Error ? e.message : t("tipsUploadFailed"));
     } finally {
       setUploading(false);
     }
@@ -80,16 +82,16 @@ export function LogoUploadDropzone({
       />
       {value ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={value} alt="Logo" className="h-16 w-auto object-contain" />
+        <img src={value} alt={t("tipsLogoAlt")} className="h-16 w-auto object-contain" />
       ) : (
         <Upload className="size-8 text-[--tips-club-lime]" />
       )}
       <div>
         <p className="text-sm font-bold text-[--tips-rink-white]">
-          {uploading ? "Uploading…" : "Drop crest to upload"}
+          {uploading ? t("tipsUploading") : t("tipsDropCrest")}
         </p>
         <p className="mt-1 text-xs text-[--tips-muted]">
-          PNG / SVG · transparent · min 512 px
+          {t("tipsLogoFormats")}
         </p>
       </div>
     </button>

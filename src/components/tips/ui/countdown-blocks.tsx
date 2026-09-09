@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { useI18n } from "~/components/providers/i18n-provider";
 import { cn } from "~/lib/utils";
 
 function pad(n: number) {
@@ -27,6 +28,7 @@ export function CountdownBlocks({
   className?: string;
   compact?: boolean;
 }) {
+  const { t } = useI18n();
   const end = useMemo(
     () => (typeof target === "string" ? new Date(target) : target),
     [target],
@@ -41,15 +43,15 @@ export function CountdownBlocks({
 
   const blocks = compact
     ? [
-        { label: "Hrs", value: pad(parts.days * 24 + parts.hours) },
-        { label: "Min", value: pad(parts.minutes) },
-        { label: "Sec", value: pad(parts.seconds) },
+        { label: t("tipsHrs"), value: pad(parts.days * 24 + parts.hours) },
+        { label: t("tipsMin"), value: pad(parts.minutes) },
+        { label: t("tipsSec"), value: pad(parts.seconds) },
       ]
     : [
-        { label: "Days", value: pad(parts.days) },
-        { label: "Hrs", value: pad(parts.hours) },
-        { label: "Min", value: pad(parts.minutes) },
-        { label: "Sec", value: pad(parts.seconds) },
+        { label: t("tipsDays"), value: pad(parts.days) },
+        { label: t("tipsHrs"), value: pad(parts.hours) },
+        { label: t("tipsMin"), value: pad(parts.minutes) },
+        { label: t("tipsSec"), value: pad(parts.seconds) },
       ];
 
   return (

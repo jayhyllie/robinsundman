@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { useI18n } from "~/components/providers/i18n-provider";
 import {
   ScoreStepper,
   TeamCrest,
@@ -15,6 +16,7 @@ import {
 import { api } from "~/trpc/react";
 
 export default function MatchDetailPage() {
+  const { t } = useI18n();
   const params = useParams<{ id: string }>();
   const id = params.id;
   const utils = api.useUtils();
@@ -33,7 +35,7 @@ export default function MatchDetailPage() {
   }
 
   if (!match) {
-    return <p className="tips-label">Loading…</p>;
+    return <p className="tips-label">{t("loading")}</p>;
   }
 
   return (
@@ -51,26 +53,26 @@ export default function MatchDetailPage() {
             }
           />
           <h1 className="tips-display mt-2 text-5xl">
-            {match.homeTeam.shortName} vs {match.awayTeam.shortName}
+            {match.homeTeam.shortName} {t("tipsVs")} {match.awayTeam.shortName}
           </h1>
           <p className="mt-1 text-sm text-[--tips-muted]">
-            /tips/m/{match.slug} · {match.predictionCount} tips
+            /tips/m/{match.slug} · {match.predictionCount} {t("tipsTipsCount")}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Link href={`/tips/m/${match.slug}`} target="_blank">
             <TipsButton variant="secondary" size="sm">
-              Mobile
+              {t("tipsMobile")}
             </TipsButton>
           </Link>
           <Link href="/tips/arena/live" target="_blank">
             <TipsButton variant="secondary" size="sm">
-              Arena
+              {t("tipsArena")}
             </TipsButton>
           </Link>
           <Link href="/tips/arena/live/winner" target="_blank">
             <TipsButton variant="gold" size="sm">
-              Winner screen
+              {t("tipsWinnerScreen")}
             </TipsButton>
           </Link>
         </div>
@@ -82,8 +84,8 @@ export default function MatchDetailPage() {
           logoUrl={match.homeTeam.logoUrl}
           size="lg"
         />
-        <span className="tips-display text-4xl text-[--tips-muted]">
-          VS
+        <span className="tips-display text-4xl text-[--tips-muted] uppercase">
+          {t("tipsVs")}
         </span>
         <TeamCrest
           name={match.awayTeam.name}
@@ -98,11 +100,11 @@ export default function MatchDetailPage() {
             disabled={publish.isPending}
             onClick={async () => {
               await publish.mutateAsync({ id });
-              toast.success("Published");
+              toast.success(t("tipsPublished"));
               await refresh();
             }}
           >
-            Publish
+            {t("tipsPublish")}
           </TipsButton>
         ) : null}
         {match.status === "OPEN" ? (
@@ -111,20 +113,20 @@ export default function MatchDetailPage() {
             disabled={close.isPending}
             onClick={async () => {
               await close.mutateAsync({ id });
-              toast.success("Closed");
+              toast.success(t("tipsClosedToast"));
               await refresh();
             }}
           >
-            Close tipping
+            {t("tipsCloseTipping")}
           </TipsButton>
         ) : null}
         <Link href={`/admin/tips/matches/${id}/winner`}>
-          <TipsButton variant="gold">Winner selection</TipsButton>
+          <TipsButton variant="gold">{t("tipsWinnerSelection")}</TipsButton>
         </Link>
       </div>
 
       <TipsGlassCard>
-        <p className="tips-label mb-4">Register result</p>
+        <p className="tips-label mb-4">{t("tipsRegisterResult")}</p>
         <div className="flex items-center justify-center gap-6">
           <ScoreStepper
             label={match.homeTeam.shortName}
@@ -146,21 +148,21 @@ export default function MatchDetailPage() {
           disabled={register.isPending}
           onClick={async () => {
             await register.mutateAsync({ id, homeScore, awayScore });
-            toast.success("Result saved");
+            toast.success(t("tipsResultSaved"));
             await refresh();
           }}
         >
-          Save final score {homeScore}–{awayScore}
+          {t("tipsSaveFinalScore")} {homeScore}–{awayScore}
         </TipsButton>
         {match.homeScore != null ? (
           <p className="mt-3 text-center text-sm text-[--tips-muted]">
-            Current result: {match.homeScore}–{match.awayScore}
+            {t("tipsCurrentResult")}: {match.homeScore}–{match.awayScore}
           </p>
         ) : null}
       </TipsGlassCard>
 
       <TipsGlassCard>
-        <p className="tips-label mb-3">Recent tips</p>
+        <p className="tips-label mb-3">{t("tipsRecentTips")}</p>
         <div className="max-h-64 space-y-2 overflow-auto">
           {match.predictions.slice(0, 30).map((p) => (
             <div
@@ -174,7 +176,7 @@ export default function MatchDetailPage() {
             </div>
           ))}
           {match.predictions.length === 0 ? (
-            <p className="text-sm text-[--tips-muted]">No tips yet</p>
+            <p className="text-sm text-[--tips-muted]">{t("tipsNoTipsYet")}</p>
           ) : null}
         </div>
       </TipsGlassCard>
