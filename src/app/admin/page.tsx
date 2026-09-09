@@ -1,3 +1,5 @@
+"use client";
+
 import { useI18n } from "~/components/providers/i18n-provider";
 import { TipsLinkButton } from "~/components/tips/ui";
 
