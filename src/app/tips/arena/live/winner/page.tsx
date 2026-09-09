@@ -26,7 +26,7 @@ export default function TipsArenaLiveWinnerPage() {
         <TipsGlassCard className="max-w-lg text-center">
           <p className="tips-label mb-2">{t("tipsWinner")}</p>
           <h1 className="tips-display text-4xl">{t("tipsNoLiveMatch")}</h1>
-          <p className="mt-3 text-sm text-[var(--tips-muted)]">
+          <p className="mt-3 text-sm text-[--tips-muted]">
             {t("tipsNoMatchForWinner")}
           </p>
         </TipsGlassCard>

@@ -12,8 +12,8 @@ import "~/styles/globals.css";
 import "~/styles/tips-design.css";
 
 export const metadata: Metadata = {
-  title: "ÖIK Business Club Challenge",
-  description: "Real-time quiz for Östersunds IK Business Club",
+  title: "Robin Sundman AB",
+  description: "Robin Sundman AB",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 

@@ -39,7 +39,7 @@ export function WinnerRevealClient({ slug }: { slug: string }) {
             logoUrl={match.homeTeam.logoUrl}
             size="md"
           />
-          <span className="tips-display text-2xl text-[var(--tips-muted)]">
+          <span className="tips-display text-2xl text-[--tips-muted]">
             {match.homeTeam.shortName} {t("tipsVs")} {match.awayTeam.shortName}
           </span>
           <TeamCrest
@@ -51,39 +51,39 @@ export function WinnerRevealClient({ slug }: { slug: string }) {
 
         {winner ? (
           <>
-            <h1 className="tips-display tips-animate-glow rounded-[var(--tips-radius-lg)] px-8 py-4 text-6xl tips-gold-text md:text-8xl">
+            <h1 className="tips-display tips-animate-glow rounded-[--tips-radius-lg] px-8 py-4 text-6xl tips-gold-text md:text-8xl">
               {winner.prediction.playerName}
             </h1>
 
             <TipsGlassCard className="w-full max-w-lg tips-animate-glow">
-              <p className="tips-label mb-2 !text-[var(--tips-trophy-gold)]">
+              <p className="tips-label mb-2 text-[--tips-trophy-gold]!">
                 {t("tipsPredictedExactScore")}
               </p>
               <p className="tips-display text-7xl tips-ice-text md:text-8xl">
                 {winner.prediction.homeGoals}–{winner.prediction.awayGoals}
               </p>
               {match.homeScore != null && match.awayScore != null ? (
-                <p className="mt-3 text-sm text-[var(--tips-muted)]">
+                <p className="mt-3 text-sm text-[--tips-muted]">
                   {t("tipsFinalResult")} {match.homeScore}–{match.awayScore}
                 </p>
               ) : null}
             </TipsGlassCard>
 
-            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-[var(--tips-muted)]">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-[--tips-muted]">
               <span>
                 <span className="tips-ice-text font-bold tabular-nums">
                   {match.predictionCount.toLocaleString("sv-SE")}
                 </span>{" "}
                 {t("tipsTipsCount")}
               </span>
-              <span className="text-[var(--tips-glass-border)]">·</span>
+              <span className="text-[--tips-glass-border]">·</span>
               <span>{t("tipsExactScoreDraw")}</span>
             </div>
           </>
         ) : (
           <TipsGlassCard className="w-full max-w-lg">
             <p className="tips-display text-4xl">{t("tipsWaitingForDraw")}</p>
-            <p className="mt-3 text-sm text-[var(--tips-muted)]">
+            <p className="mt-3 text-sm text-[--tips-muted]">
               {t("tipsWinnerWillAppear")}
             </p>
           </TipsGlassCard>

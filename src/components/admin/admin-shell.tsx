@@ -6,6 +6,7 @@ import { Medal } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import Image from "next/image";
 
 import { useI18n } from "~/components/providers/i18n-provider";
 import { TipsScope } from "~/components/tips/tips-scope";
@@ -29,6 +30,7 @@ import {
 import { TooltipProvider } from "~/components/ui/tooltip";
 import type { TranslationKey } from "~/i18n/translations";
 import { CLERK_ENABLED } from "~/lib/auth-mode";
+import { useBranding } from "../providers/branding-provider";
 
 export type AdminNavItem = {
   href: string;
@@ -83,15 +85,18 @@ function AdminSidebar({
   navItems: AdminNavItem[];
 }) {
   const { t } = useI18n();
+  const { logoUrl } = useBranding();
 
   return (
     <Sidebar
       collapsible="icon"
-      className="border-[--tips-glass-border] bg-transparent [&_[data-slot=sidebar-inner]]:bg-black/40"
+      className="border-[--tips-glass-border] bg-transparent **:data-[slot=sidebar-inner]:bg-black/40"
     >
       <SidebarHeader className="px-3 py-4">
         <div className="overflow-hidden px-1 group-data-[collapsible=icon]:hidden">
-          <p className="tips-label">Sundman</p>
+          {logoUrl ? 
+            <Image src={logoUrl} alt="Sundman events" width={200} height={200} className="w-full h-auto" /> 
+            : <p className="tips-label">Sundman events</p> }
           <p className="tips-display text-2xl leading-none">{title}</p>
         </div>
         <div className="hidden items-center justify-center group-data-[collapsible=icon]:flex">
@@ -152,7 +157,7 @@ export function AdminShell({
         >
           <AdminSidebar title={title} navItems={navItems} />
           <SidebarInset className="min-h-0 overflow-hidden bg-transparent">
-            <header className="flex h-14 shrink-0 items-center gap-2 border-b border-[--tips-glass-border] px-4">
+            <header className="flex h-10 shrink-0 items-center gap-2 px-4">
               <SidebarTrigger className="-ml-1 text-[--tips-rink-white] hover:bg-[--tips-glass-bg] hover:text-[--tips-club-lime]" />
               <div className="min-w-0 md:hidden">
                 <p className="tips-label truncate">Sundman</p>

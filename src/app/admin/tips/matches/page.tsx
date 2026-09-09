@@ -39,7 +39,7 @@ export default function TipsMatchesPage() {
               <span className="tips-display text-2xl">
                 {m.homeTeam.shortName}
               </span>
-              <span className="text-[var(--tips-muted)]">{t("tipsVs")}</span>
+              <span className="text-[--tips-muted]">{t("tipsVs")}</span>
               <span className="tips-display text-2xl">
                 {m.awayTeam.shortName}
               </span>
@@ -59,10 +59,10 @@ export default function TipsMatchesPage() {
                   | "WINNER_PICKED"
               }
             />
-            <span className="text-sm text-[var(--tips-muted)]">
+            <span className="text-sm text-[--tips-muted]">
               {m.predictionCount} {t("tipsTipsCount")}
             </span>
-            <span className="text-sm text-[var(--tips-muted)]">
+            <span className="text-sm text-[--tips-muted]">
               {new Date(m.puckDropAt).toLocaleString("sv-SE")}
             </span>
             <div className="ml-auto flex flex-wrap gap-2">
@@ -84,7 +84,7 @@ export default function TipsMatchesPage() {
         ))}
         {matches.data?.length === 0 ? (
           <TipsGlassCard>
-            <p className="text-[var(--tips-muted)]">{t("tipsNoMatchesYet")}</p>
+            <p className="text-[--tips-muted]">{t("tipsNoMatchesYet")}</p>
           </TipsGlassCard>
         ) : null}
       </div>

@@ -23,7 +23,7 @@ export function SponsorRibbon({
   return (
     <div
       className={cn(
-        "flex items-center justify-between gap-3 rounded-[var(--tips-radius-sm)] border px-4 py-2.5",
+        "flex items-center justify-between gap-3 rounded-[--tips-radius-sm] border px-4 py-2.5",
         className,
       )}
       style={{
@@ -42,17 +42,17 @@ export function SponsorRibbon({
             unoptimized
           />
         ) : (
-          <span className="tips-label !text-[var(--tips-trophy-gold)] truncate">
+          <span className="tips-label text-[--tips-trophy-gold]! truncate">
             {name}
           </span>
         )}
         {campaignText ? (
-          <span className="truncate text-xs text-[var(--tips-muted)]">
+          <span className="truncate text-xs text-[--tips-muted]">
             {campaignText}
           </span>
         ) : null}
       </div>
-      <span className="shrink-0 text-[10px] font-bold tracking-[0.14em] text-[var(--tips-trophy-gold)] uppercase">
+      <span className="shrink-0 text-[10px] font-bold tracking-[0.14em] text-[--tips-trophy-gold] uppercase">
         {t("tipsPresentedBy")}
       </span>
     </div>
@@ -72,7 +72,7 @@ export function SponsorFooterLockup({
 
   return (
     <div className={cn("flex flex-col items-center gap-2", className)}>
-      <span className="tips-label !text-[var(--tips-trophy-gold)]">
+      <span className="tips-label text-[--tips-trophy-gold]!">
         {t("tipsPresentedBy")}
       </span>
       {logoUrl ? (
@@ -85,7 +85,7 @@ export function SponsorFooterLockup({
           unoptimized
         />
       ) : (
-        <span className="tips-display text-2xl text-[var(--tips-trophy-gold)]">
+        <span className="tips-display text-2xl text-[--tips-trophy-gold]">
           {name}
         </span>
       )}

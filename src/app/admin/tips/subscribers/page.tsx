@@ -47,7 +47,7 @@ export default function SubscribersAdminPage() {
         <div>
           <p className="tips-label">{t("tipsExport")}</p>
           <h1 className="tips-display text-5xl">{t("tipsNewsletterConsent")}</h1>
-          <p className="mt-2 text-sm text-[var(--tips-muted)]">
+          <p className="mt-2 text-sm text-[--tips-muted]">
             {t("tipsSubscribersHint")}
           </p>
         </div>
@@ -64,17 +64,17 @@ export default function SubscribersAdminPage() {
         <p className="tips-label mb-3">
           {subscribers.data?.length ?? 0} {t("tipsSubscribersCount")}
         </p>
-        <div className="max-h-[28rem] space-y-2 overflow-auto">
+        <div className="max-h-112 space-y-2 overflow-auto">
           {subscribers.data?.map((s) => (
             <div
               key={s.email}
-              className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--tips-glass-border)] py-2 text-sm"
+              className="flex flex-wrap items-center justify-between gap-2 border-b border-[--tips-glass-border] py-2 text-sm"
             >
               <div>
                 <p className="font-bold">{s.email}</p>
-                <p className="text-[var(--tips-muted)]">{s.playerName}</p>
+                <p className="text-[--tips-muted]">{s.playerName}</p>
               </div>
-              <span className="text-xs text-[var(--tips-muted)]">
+              <span className="text-xs text-[--tips-muted]">
                 {s.marketingConsentAt
                   ? new Date(s.marketingConsentAt).toLocaleString("sv-SE")
                   : "—"}
@@ -82,7 +82,7 @@ export default function SubscribersAdminPage() {
             </div>
           ))}
           {(subscribers.data?.length ?? 0) === 0 ? (
-            <p className="text-sm text-[var(--tips-muted)]">
+            <p className="text-sm text-[--tips-muted]">
               {t("tipsNoConsentsYet")}
             </p>
           ) : null}

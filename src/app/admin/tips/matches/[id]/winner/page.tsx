@@ -41,14 +41,14 @@ export default function WinnerAdminPage() {
         <h1 className="tips-display text-5xl">
           {match.homeTeam.shortName} {t("tipsVs")} {match.awayTeam.shortName}
         </h1>
-        <p className="mt-1 text-sm text-[var(--tips-muted)]">
+        <p className="mt-1 text-sm text-[--tips-muted]">
           {t("tipsResult")} {match.homeScore ?? "–"}–{match.awayScore ?? "–"} ·{" "}
           {correct.data?.length ?? 0} {t("tipsExactTips")}
         </p>
       </div>
 
       {winner ? (
-        <TipsGlassCard className="tips-animate-glow border-[var(--tips-trophy-gold)]/40">
+        <TipsGlassCard className="tips-animate-glow border-[--tips-trophy-gold]/40">
           <TipsBadge status="WINNER_PICKED" />
           <p className="tips-display mt-3 text-5xl tips-gold-text">
             {winner.prediction.playerName}
@@ -56,7 +56,7 @@ export default function WinnerAdminPage() {
           <p className="mt-2 tips-ice-text tips-display text-3xl">
             {winner.prediction.homeGoals}–{winner.prediction.awayGoals}
           </p>
-          <p className="mt-2 text-sm text-[var(--tips-muted)]">
+          <p className="mt-2 text-sm text-[--tips-muted]">
             {t("tipsDrawn")} {new Date(winner.drawnAt).toLocaleString("sv-SE")}
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
@@ -85,7 +85,7 @@ export default function WinnerAdminPage() {
       ) : (
         <TipsGlassCard>
           <p className="tips-display text-3xl">{t("tipsDrawPool")}</p>
-          <p className="mt-2 text-sm text-[var(--tips-muted)]">
+          <p className="mt-2 text-sm text-[--tips-muted]">
             {t("tipsDrawPoolHint")}
           </p>
           <TipsButton
@@ -119,14 +119,14 @@ export default function WinnerAdminPage() {
           {correct.data?.map((p) => (
             <div
               key={p.id}
-              className="flex justify-between border-b border-[var(--tips-glass-border)] py-2 text-sm"
+              className="flex justify-between border-b border-[--tips-glass-border] py-2 text-sm"
             >
               <span>{p.playerName}</span>
-              <span className="text-[var(--tips-muted)]">{p.email}</span>
+              <span className="text-[--tips-muted]">{p.email}</span>
             </div>
           ))}
           {(correct.data?.length ?? 0) === 0 ? (
-            <p className="text-sm text-[var(--tips-muted)]">
+            <p className="text-sm text-[--tips-muted]">
               {t("tipsNoExactTipsYet")}
             </p>
           ) : null}
