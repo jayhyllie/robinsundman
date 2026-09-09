@@ -9,24 +9,18 @@ const isAdminRoute = createRouteMatcher([
 ]);
 
 export default CLERK_ENABLED
-  ? clerkMiddleware(
-      async (auth, req) => {
-        if (isAdminRoute(req)) {
-          await auth.protect();
-        }
-      },
-      {
-        // Required while vercel.app remains connected in Clerk Production
-        // (Account Portal disabled → app hosts /sign-in and proxies FAPI).
-        frontendApiProxy: { enabled: true },
-      },
-    )
+  ? clerkMiddleware(async (auth, req) => {
+      if (isAdminRoute(req)) {
+        await auth.protect();
+      }
+    })
   : () => NextResponse.next();
 
 export const config = {
   matcher: [
+    // Skip Next.js internals and static files, unless found in search params
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    // Always run for API routes
     "/(api|trpc)(.*)",
-    "/__clerk/(.*)",
   ],
 };
