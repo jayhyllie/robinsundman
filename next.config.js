@@ -10,6 +10,12 @@ const config = {
   async redirects() {
     return [
       {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.robinsundman.se" }],
+        destination: "https://robinsundman.se/:path*",
+        permanent: true,
+      },
+      {
         source: "/join/:code",
         destination: "/quiz/join/:code",
         permanent: false,
