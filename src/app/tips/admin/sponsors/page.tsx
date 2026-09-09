@@ -50,7 +50,7 @@ export default function SponsorsAdminPage() {
           onClick={() => setExpanded(expanded === "new" ? null : "new")}
         >
           {editingId ? "Edit sponsor" : "Create sponsor"}{" "}
-          <span className="text-[var(--tips-muted)]">
+          <span className="text-[--tips-muted]">
             {expanded === "new" ? "−" : "+"}
           </span>
         </button>
@@ -72,7 +72,7 @@ export default function SponsorsAdminPage() {
                 type="color"
                 value={primaryColor}
                 onChange={(e) => setPrimaryColor(e.target.value)}
-                className="h-12 w-20 cursor-pointer rounded border border-[var(--tips-glass-border)] bg-transparent"
+                className="h-12 w-20 cursor-pointer rounded border border-[--tips-glass-border] bg-transparent"
               />
             </label>
             <LogoUploadDropzone value={logoUrl} onUploaded={setLogoUrl} />
@@ -81,7 +81,7 @@ export default function SponsorsAdminPage() {
                 type="checkbox"
                 checked={isActive}
                 onChange={(e) => setIsActive(e.target.checked)}
-                className="size-4 accent-[var(--tips-club-lime)]"
+                className="size-4 accent-[--tips-club-lime]"
               />
               Show on all screens
             </label>
@@ -145,18 +145,18 @@ export default function SponsorsAdminPage() {
               />
               <div className="min-w-0 flex-1">
                 <p className="tips-display text-2xl">{s.name}</p>
-                <p className="truncate text-xs text-[var(--tips-muted)]">
+                <p className="truncate text-xs text-[--tips-muted]">
                   {s.campaignText && s.campaignText.length > 0
                     ? s.campaignText
                     : "No campaign text"}
                 </p>
               </div>
-              <span className="text-xs font-bold tracking-wide uppercase text-[var(--tips-muted)]">
+              <span className="text-xs font-bold tracking-wide uppercase text-[--tips-muted]">
                 {s.isActive ? "Active" : "Off"}
               </span>
             </button>
             {expanded === s.id ? (
-              <div className="mt-4 flex flex-wrap gap-2 border-t border-[var(--tips-glass-border)] pt-4">
+              <div className="mt-4 flex flex-wrap gap-2 border-t border-[--tips-glass-border] pt-4">
                 <TipsButton
                   size="sm"
                   variant="secondary"

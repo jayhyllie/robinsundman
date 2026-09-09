@@ -64,13 +64,6 @@ export default function HomePage() {
         .slice(0, 2),
     })) ?? [];
 
-  const now = new Date();
-  const nextReset = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-  const nextResetLabel = nextReset.toLocaleDateString(locale === "sv" ? "sv-SE" : "en-US", {
-    day: "numeric",
-    month: "long",
-  });
-
   return (
     <SidebarShell>
       <div className="relative isolate min-h-full">

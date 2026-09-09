@@ -41,11 +41,11 @@ export function AppTitle({
   return (
     <div className={align === "left" ? "text-left" : "text-center"}>
       <p className="tips-label mb-2">{appName}</p>
-      <h1 className="tips-display text-5xl text-[var(--tips-rink-white)] md:text-7xl">
+      <h1 className="tips-display text-5xl text-[--tips-rink-white] md:text-7xl">
         {challengeTag}
       </h1>
       {subtitle && (
-        <p className="mt-3 text-sm text-[var(--tips-muted)] md:text-base">
+        <p className="mt-3 text-sm text-[--tips-muted] md:text-base">
           {subtitle}
         </p>
       )}
