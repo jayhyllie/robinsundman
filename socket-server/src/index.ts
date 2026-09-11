@@ -193,12 +193,145 @@ async function emitSessionState(sessionId: string) {
 
 // Per question, only the best-scoring player per company earns company points.
 // Individual player scores always accumulate fully.
+function seasonLabel(date: Date): string {
+  const startYear =
+    date.getMonth() >= 6 ? date.getFullYear() : date.getFullYear() - 1;
+  const endYear = startYear + 1;
+  return `${String(startYear).slice(-2)}/${String(endYear).slice(-2)}`;
+}
+
+async function ensureActiveLeaderboardPeriods() {
+  const now = new Date();
+
+  const activeSeason = await prisma.leaderboardPeriod.findFirst({
+    where: { type: "SEASON", isActive: true },
+  });
+  if (!activeSeason) {
+    const label = seasonLabel(now);
+    await prisma.leaderboardPeriod.create({
+      data: {
+        nameSv: `Säsong ${label}`,
+        nameEn: `Season ${label}`,
+        type: "SEASON",
+        startsAt: now,
+        isActive: true,
+      },
+    });
+  }
+
+  const activeMonthly = await prisma.leaderboardPeriod.findFirst({
+    where: { type: "MONTHLY", isActive: true },
+  });
+  if (!activeMonthly) {
+    await prisma.leaderboardPeriod.create({
+      data: {
+        nameSv: now.toLocaleString("sv-SE", {
+          month: "long",
+          year: "numeric",
+        }),
+        nameEn: now.toLocaleString("en-US", {
+          month: "long",
+          year: "numeric",
+        }),
+        type: "MONTHLY",
+        startsAt: new Date(now.getFullYear(), now.getMonth(), 1),
+        isActive: true,
+      },
+    });
+  }
+}
+
+/**
+ * Rebuilds active season/monthly leaderboards from graded answers.
+ * Idempotent absolute upserts — safe to call after every quiz.
+ */
+async function rebuildActiveLeaderboardsFromAnswers() {
+  await ensureActiveLeaderboardPeriods();
+
+  const periods = await prisma.leaderboardPeriod.findMany({
+    where: { isActive: true },
+  });
+  if (periods.length === 0) return;
+
+  const answers = await prisma.answer.findMany({
+    where: { points: { gt: 0 } },
+    include: { participant: true },
+  });
+
+  const playerTotals = new Map<
+    string,
+    { playerName: string; companyId: string; points: number }
+  >();
+  const companyBestByQuestion = new Map<string, number>();
+
+  for (const answer of answers) {
+    const playerKey = `${answer.participant.playerName}\0${answer.participant.companyId}`;
+    const existing = playerTotals.get(playerKey);
+    if (existing) {
+      existing.points += answer.points;
+    } else {
+      playerTotals.set(playerKey, {
+        playerName: answer.participant.playerName,
+        companyId: answer.participant.companyId,
+        points: answer.points,
+      });
+    }
+
+    const companyKey = `${answer.participant.companyId}\0${answer.quizQuestionId}`;
+    companyBestByQuestion.set(
+      companyKey,
+      Math.max(companyBestByQuestion.get(companyKey) ?? 0, answer.points),
+    );
+  }
+
+  const companyTotals = new Map<string, number>();
+  for (const [companyKey, points] of companyBestByQuestion) {
+    const companyId = companyKey.slice(0, companyKey.indexOf("\0"));
+    companyTotals.set(companyId, (companyTotals.get(companyId) ?? 0) + points);
+  }
+
+  for (const period of periods) {
+    for (const player of playerTotals.values()) {
+      await prisma.playerScore.upsert({
+        where: {
+          playerName_companyId_periodId: {
+            playerName: player.playerName,
+            companyId: player.companyId,
+            periodId: period.id,
+          },
+        },
+        create: {
+          playerName: player.playerName,
+          companyId: player.companyId,
+          periodId: period.id,
+          points: player.points,
+        },
+        update: { points: player.points },
+      });
+    }
+
+    for (const [companyId, points] of companyTotals) {
+      await prisma.companyScore.upsert({
+        where: { companyId_periodId: { companyId, periodId: period.id } },
+        create: { companyId, periodId: period.id, points },
+        update: { points },
+      });
+    }
+  }
+}
+
+// In-memory cache of best company score per question per period.
+// Resets if socket server restarts (acceptable: sessions are ephemeral).
+const companyQuestionBest = new Map<string, number>();
+
 async function updateLeaderboardScores(
   companyId: string,
   playerName: string,
   playerPoints: number,
   quizQuestionId: string,
 ) {
+  await ensureActiveLeaderboardPeriods();
+
   const periods = await prisma.leaderboardPeriod.findMany({
     where: { isActive: true },
   });
@@ -211,13 +344,6 @@ async function updateLeaderboardScores(
   const companyPoints = bestForCompany._max.points ?? 0;
 
   for (const period of periods) {
-    // For company: we store a running total by recalculating from scratch
-    // is expensive at scale but fine for ≤130 users. Simpler: just track the
-    // per-question best and accumulate only the delta if needed.
-    // Here we do a full upsert with the company's best score for this question.
-    // To avoid double-counting we use a separate CompanyQuestionScore table
-    // approach via raw upsert delta logic: see comment below.
-
     // Individual player score: always increment
     await prisma.playerScore.upsert({
       where: {
@@ -252,10 +378,6 @@ async function updateLeaderboardScores(
     }
   }
 }
-
-// In-memory cache of best company score per question per period.
-// Resets if socket server restarts (acceptable: sessions are ephemeral).
-const companyQuestionBest = new Map<string, number>();
 
 async function revealQuestion(sessionId: string) {
   const session = await prisma.quizSession.findUnique({
@@ -655,6 +777,10 @@ io.on("connection", (socket: Socket) => {
         data: { status: "COMPLETED" },
       }),
     ]);
+
+    // Guarantee season/monthly boards reflect this quiz even if periods
+    // were missing when individual questions were revealed.
+    await rebuildActiveLeaderboardsFromAnswers();
 
     await emitSessionState(parsed.data.sessionId);
   });
