@@ -57,13 +57,21 @@ export function ArenaClient({ slug }: { slug: string }) {
 
       <div className="grid flex-1 gap-10 lg:grid-cols-2 lg:items-center">
         <div className="tips-animate-reveal space-y-8">
-          <h1 className="tips-display text-6xl leading-[0.9] md:text-7xl lg:text-8xl">
-            {t("tipsScan")}
-            <br />
-            {t("tipsPredictDot")}
-            <br />
-            <span className="tips-ice-text">{t("tipsWin")}</span>
-          </h1>
+          <div className="flex justify-between">
+            <h1 className="tips-display text-6xl leading-[0.9] md:text-7xl lg:text-8xl">
+              {t("tipsScan")}
+              <br />
+              {t("tipsPredictDot")}
+              <br />
+              <span className="tips-ice-text">{t("tipsWin")}</span>
+            </h1>
+            <p className="text-4xl text-[--tips-muted]">
+              <span className="tips-display tips-ice-text text-9xl tabular-nums">
+                {count.toLocaleString("sv-SE")}
+              </span>{" "}
+              {t("tipsFansAlreadyTipped")}
+            </p>
+          </div>
 
           <div className="flex items-center gap-6">
             <TeamCrest
@@ -87,13 +95,6 @@ export function ArenaClient({ slug }: { slug: string }) {
             <p className="tips-label mb-3">{t("tipsPuckDrop")}</p>
             <CountdownBlocks target={match.puckDropAt} className="max-w-xl" />
           </div>
-
-          <p className="text-xl text-[--tips-muted]">
-            <span className="tips-display tips-ice-text text-9xl tabular-nums">
-              {count.toLocaleString("sv-SE")}
-            </span>{" "}
-            {t("tipsFansAlreadyTipped")}
-          </p>
         </div>
 
         <TipsGlassCard className="bg-none border-none mx-auto flex w-full flex-col items-center gap-5 p-8 tips-animate-reveal">
