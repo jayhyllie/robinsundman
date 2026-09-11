@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CalendarDays, Users } from "lucide-react";
 
@@ -36,6 +36,7 @@ export default function PlayPage() {
   const params = useParams<{ sessionId: string }>();
   const { t, locale } = useI18n();
   const { quizBgImageUrl } = useBranding();
+  const router = useRouter();
   const sessionId = params.sessionId;
 
   const [sessionToken, setSessionToken] = useState<string | null>(null);
@@ -103,7 +104,7 @@ export default function PlayPage() {
 
   if (!sessionToken) {
     return (
-      <MobileShell bgImage={quizBgImageUrl}>
+      <MobileShell bgImage={quizBgImageUrl} onClickLogo={() => router.push("/quiz")}>
         <p className="text-center text-[--tips-muted]">{t("cannotJoin")}</p>
       </MobileShell>
     );

@@ -113,7 +113,7 @@ function JoinCombobox({
         </div>
 
         {open && !disabled && (
-          <div className="tips-glass absolute z-50 mt-1 w-full overflow-hidden p-0 shadow-lg">
+          <div className="bg-black rounded-lg absolute z-50 mt-1 w-full overflow-hidden p-0 shadow-lg">
             {filtered.length > 0 ? (
               <ul className="max-h-48 overflow-y-auto py-1">
                 {filtered.map((option) => (

@@ -42,18 +42,20 @@ export function MobileShell({
   className,
   bgImage,
   showLogo = true,
+  onClickLogo,
 }: {
   children: React.ReactNode;
   className?: string;
   bgImage?: string | null;
   showLogo?: boolean;
+  onClickLogo?: () => void;
 }) {
   return (
     <div className="tips-scope tips-bg relative isolate min-h-screen">
       <HeroBackground imageUrl={bgImage} />
       <div className={cn("mobile-only relative z-10 flex min-h-screen flex-col px-4 py-6", className)}>
         <div className="mb-4 flex items-center justify-between">
-          <OikLogo showLogo={showLogo} />
+          <OikLogo showLogo={showLogo} onClick={onClickLogo} />
           <LanguageSwitcher />
         </div>
         {children}

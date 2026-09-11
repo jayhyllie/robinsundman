@@ -29,7 +29,7 @@ export default function ActiveQuizPage() {
           <p className="tips-label">{t("rejoining")}</p>
         ) : !quiz || !session || !joinUrl ? (
           <TipsGlassCard className="py-12 text-center">
-            <QrCode className="mx-auto mb-4 h-10 w-10 text-[var(--tips-muted)]" />
+            <QrCode className="mx-auto mb-4 h-10 w-10 text-[--tips-muted]" />
             <p className="tips-display text-3xl">{t("noActiveQuizFound")}</p>
             <TipsLinkButton href="/quiz" variant="secondary" className="mt-6 inline-flex">
               {t("home")}
@@ -60,15 +60,9 @@ export default function ActiveQuizPage() {
                   label={`${quiz._count.questions} ${t("questionsCount")}`}
                 />
               </div>
-              <div className="pt-2">
-                <p className="tips-label mb-2">{t("joinCode")}</p>
-                <p className="tips-display text-5xl tracking-[0.2em] tips-gold-text sm:text-6xl">
-                  {session.joinCode}
-                </p>
-              </div>
             </TipsGlassCard>
 
-            <QrDisplay url={joinUrl} size={480} />
+            <QrDisplay url={joinUrl} size={600} />
           </div>
         )}
       </div>
@@ -84,8 +78,8 @@ function InfoChip({
   label: string;
 }) {
   return (
-    <span className="tips-glass inline-flex items-center gap-2 rounded-[var(--tips-radius-pill)] px-3 py-1.5 text-[11px] font-extrabold tracking-[0.14em] uppercase">
-      <Icon className="h-3.5 w-3.5 text-[var(--tips-club-lime)]" />
+    <span className="tips-glass inline-flex items-center gap-2 rounded-[--tips-radius-pill] px-3 py-1.5 text-[11px] font-extrabold tracking-[0.14em] uppercase">
+      <Icon className="h-3.5 w-3.5 text-[--tips-club-lime]" />
       {label}
     </span>
   );

@@ -116,7 +116,7 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-layout-md lg:grid-cols-layout-lg gap-4">
           <TipsGlassCard className="relative">
             <p className="tips-label mb-4">{t("latestMatch")}</p>
-            <div className="flex flex-col items-center gap-4 py-4">
+            <div className="flex flex-col items-center gap-4 py-4 pb-16 sm:pb-4">
               {latestMatch?.podium && latestMatch.podium.length > 0 ? (
                 <>
                   <div className="flex items-end justify-center gap-4">

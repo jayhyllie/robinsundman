@@ -3,7 +3,7 @@
 import { useBranding } from "~/components/providers/branding-provider";
 import { cn } from "~/lib/utils";
 
-export function OikLogo({ className, showLogo = true }: { className?: string; showLogo?: boolean }) {
+export function OikLogo({ className, showLogo = true, onClick }: { className?: string; showLogo?: boolean; onClick?: () => void }) {
   const { clubShort, logoUrl } = useBranding();
 
   return (
@@ -14,6 +14,7 @@ export function OikLogo({ className, showLogo = true }: { className?: string; sh
         "flex items-center gap-2 font-bold tracking-wide",
         className,
       )}
+      onClick={onClick}
     >
       {logoUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
