@@ -294,10 +294,10 @@ export default function HostPanelClient() {
       )}
 
       {state?.currentQuestion && (
-        <Card>
+        <Card key={state.currentQuestion.quizQuestionId}>
           <CardHeader>
             <CardTitle>
-              {t("question")} {currentIndex + 1}
+              {t("question")} {state.currentQuestion.order + 1}
             </CardTitle>
           </CardHeader>
           <CardContent>

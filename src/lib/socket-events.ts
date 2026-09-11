@@ -34,6 +34,8 @@ export type QuestionPayload = {
 
 export type SessionStatePayload = {
   sessionId: string;
+  /** Monotonic per-session emit counter — clients ignore older payloads. */
+  seq?: number;
   status:
     | "LOBBY"
     | "QUESTION_ACTIVE"

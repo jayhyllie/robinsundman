@@ -22,6 +22,7 @@ export function useSocketSession(options: {
   const { sessionId, sessionToken, isAdmin, adminSecret, enabled = true } =
     options;
   const socketRef = useRef<Socket | null>(null);
+  const lastSeqRef = useRef(0);
   const [connected, setConnected] = useState(false);
   const [state, setState] = useState<SessionStatePayload | null>(null);
   const [freeTextSubmissions, setFreeTextSubmissions] = useState<
@@ -31,6 +32,9 @@ export function useSocketSession(options: {
 
   useEffect(() => {
     if (!enabled || !sessionId) return;
+
+    lastSeqRef.current = 0;
+    setState(null);
 
     const socket = io(SOCKET_URL, { transports: ["websocket", "polling"] });
     socketRef.current = socket;
@@ -49,6 +53,11 @@ export function useSocketSession(options: {
 
     socket.on("disconnect", () => setConnected(false));
     socket.on(SOCKET_EVENTS.SESSION_STATE, (payload: SessionStatePayload) => {
+      // Drop out-of-order / stale broadcasts (common on flaky mobile networks).
+      if (typeof payload.seq === "number") {
+        if (payload.seq < lastSeqRef.current) return;
+        lastSeqRef.current = payload.seq;
+      }
       setState(payload);
     });
     socket.on(

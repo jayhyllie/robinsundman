@@ -20,6 +20,19 @@ const io = new Server(httpServer, {
     cors: { origin: CLIENT_URL, methods: ["GET", "POST"] },
 });
 const roomStates = new Map();
+function ensureRoom(sessionId) {
+    const existing = roomStates.get(sessionId);
+    if (existing)
+        return existing;
+    const created = {
+        sessionId,
+        correctOptionId: null,
+        revealTimer: null,
+        seq: 0,
+    };
+    roomStates.set(sessionId, created);
+    return created;
+}
 function calculatePoints(responseTimeMs, timeLimitMs) {
     const remaining = Math.max(0, timeLimitMs - responseTimeMs);
     return Math.floor(1000 * (remaining / timeLimitMs));
@@ -45,7 +58,7 @@ async function buildLeaderboard(sessionId) {
             .slice(0, 2),
     }));
 }
-async function buildSessionState(sessionId) {
+async function buildSessionState(sessionId, forAdmin = false) {
     const session = await prisma.quizSession.findUnique({
         where: { id: sessionId },
         include: {
@@ -70,8 +83,11 @@ async function buildSessionState(sessionId) {
     if (!session)
         return null;
     const room = roomStates.get(sessionId);
-    const currentQQ = session.currentQuestionIndex >= 0
-        ? session.quiz.questions[session.currentQuestionIndex]
+    const idx = session.currentQuestionIndex;
+    const currentQQ = idx >= 0
+        ? (session.quiz.questions.find((q) => q.order === idx) ??
+            session.quiz.questions[idx] ??
+            null)
         : null;
     const currentQuestion = currentQQ
         ? {
@@ -90,11 +106,13 @@ async function buildSessionState(sessionId) {
             })),
         }
         : null;
+    // Players only learn the correct option after reveal. Admins see it live.
     let correctOptionId = room?.correctOptionId ?? null;
-    if (session.status === "QUESTION_REVEAL" &&
-        currentQQ?.question.type === "MULTIPLE_CHOICE") {
+    if (currentQQ?.question.type === "MULTIPLE_CHOICE" &&
+        (forAdmin || session.status === "QUESTION_REVEAL")) {
         correctOptionId =
-            currentQQ.question.options.find((o) => o.isCorrect)?.id ?? null;
+            currentQQ.question.options.find((o) => o.isCorrect)?.id ??
+                null;
     }
     return {
         sessionId: session.id,
@@ -125,11 +143,23 @@ async function buildSessionState(sessionId) {
     };
 }
 async function emitSessionState(sessionId) {
-    const state = await buildSessionState(sessionId);
-    if (state) {
-        io.to(`session:${sessionId}`).emit("session_state", state);
-        io.to(`admin:${sessionId}`).emit("session_state", state);
-    }
+    const room = ensureRoom(sessionId);
+    room.seq += 1;
+    const seq = room.seq;
+    // One DB read — derive player/admin payloads so they cannot diverge.
+    const adminState = await buildSessionState(sessionId, true);
+    if (!adminState)
+        return;
+    const sequenced = { ...adminState, seq };
+    io.to(`admin:${sessionId}`).emit("session_state", sequenced);
+    const playerState = {
+        ...sequenced,
+        correctOptionId: adminState.status === "QUESTION_REVEAL" ||
+            adminState.status === "FREE_TEXT_REVIEW"
+            ? adminState.correctOptionId
+            : null,
+    };
+    io.to(`session:${sessionId}`).emit("session_state", playerState);
 }
 // Per question, only the best-scoring player per company earns company points.
 // Individual player scores always accumulate fully.
@@ -204,18 +234,15 @@ async function revealQuestion(sessionId) {
     });
     if (!session || session.status !== "QUESTION_ACTIVE")
         return;
-    const qq = session.quiz.questions[session.currentQuestionIndex];
+    const idx = session.currentQuestionIndex;
+    const qq = session.quiz.questions.find((q) => q.order === idx) ??
+        session.quiz.questions[idx];
     if (!qq)
         return;
     if (qq.question.type === "MULTIPLE_CHOICE") {
         const correctOption = qq.question.options.find((o) => o.isCorrect);
-        const room = roomStates.get(sessionId) ?? {
-            sessionId,
-            correctOptionId: null,
-            revealTimer: null,
-        };
+        const room = ensureRoom(sessionId);
         room.correctOptionId = correctOption?.id ?? null;
-        roomStates.set(sessionId, room);
         const answers = await prisma.answer.findMany({
             where: { quizQuestionId: qq.id, sessionId },
             include: { participant: true },
@@ -271,18 +298,13 @@ async function revealQuestion(sessionId) {
     await emitSessionState(sessionId);
 }
 function scheduleReveal(sessionId, endsAt) {
-    const room = roomStates.get(sessionId) ?? {
-        sessionId,
-        correctOptionId: null,
-        revealTimer: null,
-    };
+    const room = ensureRoom(sessionId);
     if (room.revealTimer)
         clearTimeout(room.revealTimer);
     const delay = Math.max(0, endsAt.getTime() - Date.now());
     room.revealTimer = setTimeout(() => {
         void revealQuestion(sessionId);
     }, delay);
-    roomStates.set(sessionId, room);
 }
 io.on("connection", (socket) => {
     socket.on("join_session", async (payload) => {
@@ -319,8 +341,12 @@ io.on("connection", (socket) => {
         socket.join(`admin:${parsed.data.sessionId}`);
         socket.data.sessionId = parsed.data.sessionId;
         socket.data.isAdmin = true;
-        const state = await buildSessionState(parsed.data.sessionId);
-        socket.emit("session_state", state);
+        const room = ensureRoom(parsed.data.sessionId);
+        room.seq += 1;
+        const state = await buildSessionState(parsed.data.sessionId, true);
+        if (state) {
+            socket.emit("session_state", { ...state, seq: room.seq });
+        }
     });
     socket.on("submit_answer", async (payload) => {
         const parsed = z
@@ -413,13 +439,8 @@ io.on("connection", (socket) => {
             return;
         const startedAt = new Date();
         const endsAt = new Date(startedAt.getTime() + qq.timeLimitSec * 1000);
-        const room = roomStates.get(parsed.data.sessionId) ?? {
-            sessionId: parsed.data.sessionId,
-            correctOptionId: null,
-            revealTimer: null,
-        };
+        const room = ensureRoom(parsed.data.sessionId);
         room.correctOptionId = null;
-        roomStates.set(parsed.data.sessionId, room);
         await prisma.quizSession.update({
             where: { id: parsed.data.sessionId },
             data: {
@@ -440,6 +461,14 @@ io.on("connection", (socket) => {
             .safeParse(payload);
         if (!parsed.success)
             return;
+        const session = await prisma.quizSession.findUnique({
+            where: { id: parsed.data.sessionId },
+        });
+        if (!session ||
+            (session.status !== "QUESTION_REVEAL" &&
+                session.status !== "FREE_TEXT_REVIEW")) {
+            return;
+        }
         const room = roomStates.get(parsed.data.sessionId);
         if (room?.revealTimer)
             clearTimeout(room.revealTimer);
@@ -452,22 +481,22 @@ io.on("connection", (socket) => {
                 questionEndsAt: null,
             },
         });
-        const session = await prisma.quizSession.findUnique({
+        const sessionWithQuiz = await prisma.quizSession.findUnique({
             where: { id: parsed.data.sessionId },
             include: {
                 quiz: { include: { questions: { orderBy: { order: "asc" } } } },
             },
         });
-        if (!session)
+        if (!sessionWithQuiz)
             return;
-        const qq = session.quiz.questions[parsed.data.questionIndex];
+        const qq = sessionWithQuiz.quiz.questions[parsed.data.questionIndex];
         if (!qq) {
             await prisma.quizSession.update({
                 where: { id: parsed.data.sessionId },
                 data: { status: "COMPLETED", endedAt: new Date() },
             });
             await prisma.quiz.update({
-                where: { id: session.quizId },
+                where: { id: sessionWithQuiz.quizId },
                 data: { status: "COMPLETED" },
             });
         }

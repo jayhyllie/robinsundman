@@ -65,12 +65,10 @@ export default function PlayPage() {
   }, [participant]);
 
   useEffect(() => {
-    if (state?.status === "QUESTION_ACTIVE") {
-      setHasAnswered(false);
-      setSelectedOptionId(null);
-      setTextAnswer("");
-    }
-  }, [state?.currentQuestionIndex, state?.status]);
+    setHasAnswered(false);
+    setSelectedOptionId(null);
+    setTextAnswer("");
+  }, [state?.currentQuestion?.quizQuestionId]);
 
   useEffect(() => {
     if (state && participant) {
@@ -114,6 +112,9 @@ export default function PlayPage() {
   const question = state?.currentQuestion;
   const revealed =
     state?.status === "QUESTION_REVEAL" || state?.status === "FREE_TEXT_REVIEW";
+  // Prefer the question's own order so the badge always matches the payload.
+  const questionNumber =
+    question != null ? question.order + 1 : (state?.currentQuestionIndex ?? -1) + 1;
 
   return (
     <div className="tips-scope tips-bg relative isolate mobile-only flex min-h-screen flex-col">
@@ -174,10 +175,10 @@ export default function PlayPage() {
         )}
 
         {question && state?.status !== "LOBBY" && state?.status !== "COMPLETED" && (
-          <>
+          <div key={question.quizQuestionId}>
             <div className="mb-4 flex items-start justify-between">
               <TipsBadge status="LIVE">
-                {t("question")} {state.currentQuestionIndex + 1} {t("of")}{" "}
+                {t("question")} {questionNumber} {t("of")}{" "}
                 {state.totalQuestions}
               </TipsBadge>
               <div className="text-right">
@@ -216,7 +217,7 @@ export default function PlayPage() {
               onTextChange={setTextAnswer}
               onSubmitText={handleSubmitText}
             />
-          </>
+          </div>
         )}
 
         {state?.status === "FREE_TEXT_REVIEW" && (
