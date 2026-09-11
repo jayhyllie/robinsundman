@@ -21,7 +21,10 @@ export function LogoUploadDropzone({
   const [uploading, setUploading] = useState(false);
 
   async function handleFile(file: File) {
-    if (!["image/png", "image/svg+xml"].includes(file.type)) {
+    const typeOk =
+      ["image/png", "image/svg+xml"].includes(file.type) ||
+      /\.(png|svg)$/i.test(file.name);
+    if (!typeOk) {
       toast.error(t("tipsOnlyPngSvg"));
       return;
     }

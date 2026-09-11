@@ -43,7 +43,7 @@
 
 .tips-scope .tips-label {
   font-family: var(--tips-font-body);
-  font-size: 11px;
+  font-size: 1rem;
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;

@@ -233,7 +233,6 @@ export default function PlayPage() {
           <Leaderboard
             entries={state.leaderboard}
             horizontal
-            viewAllHref={`/quiz/leaderboard/${sessionId}`}
           />
         </div>
       )}

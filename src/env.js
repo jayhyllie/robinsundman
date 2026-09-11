@@ -10,6 +10,7 @@ export const env = createEnv({
     CLERK_SECRET_KEY: z.string().min(1).optional(),
     SOCKET_SERVER_URL: z.string().url().optional(),
     SOCKET_SERVER_SECRET: z.string().min(1).optional(),
+    BLOB_READ_WRITE_TOKEN: z.string().min(1).optional(),
   },
   client: {
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1).optional(),
@@ -23,6 +24,7 @@ export const env = createEnv({
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     SOCKET_SERVER_URL: process.env.SOCKET_SERVER_URL,
     SOCKET_SERVER_SECRET: process.env.SOCKET_SERVER_SECRET,
+    BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     NEXT_PUBLIC_CLERK_DOMAIN: process.env.NEXT_PUBLIC_CLERK_DOMAIN,
