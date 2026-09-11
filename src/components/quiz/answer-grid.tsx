@@ -44,7 +44,7 @@ export function AnswerGrid({
           onChange={(e) => onTextChange?.(e.target.value)}
           placeholder={t("typeAnswer")}
           disabled={disabled}
-          className="min-h-24 rounded-[var(--tips-radius-sm)] border-[var(--tips-glass-border)] bg-[var(--tips-glass-bg)] text-[var(--tips-rink-white)] backdrop-blur-[20px] focus-visible:border-[var(--tips-club-lime)]"
+          className="min-h-24 rounded-[--tips-radius-sm] border-[--tips-glass-border] bg-[--tips-glass-bg] text-[--tips-rink-white] backdrop-blur-[20px] focus-visible:border-[--tips-club-lime]"
         />
         {!disabled && (
           <TipsButton
@@ -78,9 +78,9 @@ export function AnswerGrid({
               "tips-glass flex h-auto items-center justify-between gap-3 px-4 py-4 text-left whitespace-normal transition disabled:opacity-50",
               !revealed && (OPTION_COLORS[option.letter] ?? ""),
               revealed && !isCorrect && !isWrong && "opacity-50",
-              isSelected && !revealed && "tips-glass-active ring-2 ring-[var(--tips-club-lime)]",
+              isSelected && !revealed && "tips-glass-active ring-2 ring-[--tips-club-lime]",
               isCorrect &&
-                "border-[var(--tips-ice-highlight)] bg-[rgba(57,255,20,0.12)] shadow-[0_0_14px_rgba(57,255,20,0.35)]",
+                "border-[--tips-ice-highlight] bg-[rgba(57,255,20,0.12)] shadow-[0_0_14px_rgba(57,255,20,0.35)]",
               isWrong &&
                 "border-red-500 bg-red-500/15 shadow-[0_0_14px_rgba(239,68,68,0.3)]",
             )}
@@ -94,14 +94,14 @@ export function AnswerGrid({
               >
                 {option.letter}
               </span>
-              <span className="font-[family-name:var(--tips-font-body)] text-sm font-extrabold tracking-wide uppercase">
+              <span className="font-[--tips-font-body] text-sm font-extrabold tracking-wide uppercase">
                 {localized(locale, option.labelSv, option.labelEn)}
               </span>
             </span>
 
             {isCorrect && (
               <Check
-                className="h-6 w-6 shrink-0 text-[var(--tips-ice-highlight)]"
+                className="h-6 w-6 shrink-0 text-[--tips-ice-highlight]"
                 strokeWidth={3}
                 aria-label={t("correct")}
               />

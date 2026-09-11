@@ -29,6 +29,9 @@ export default function WinnerAdminPage() {
     await Promise.all([
       utils.tips.matchById.invalidate({ id }),
       utils.tips.correctPredictions.invalidate({ matchId: id }),
+      utils.tips.liveMatch.invalidate(),
+      utils.tips.liveWinnerMatch.invalidate(),
+      utils.tips.winnerBySlug.invalidate(),
     ]);
   }
 
@@ -60,7 +63,7 @@ export default function WinnerAdminPage() {
             {t("tipsDrawn")} {new Date(winner.drawnAt).toLocaleString("sv-SE")}
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
-            <Link href="/tips/arena/live/winner" target="_blank">
+            <Link href={`/tips/arena/${match.slug}/winner`} target="_blank">
               <TipsButton variant="gold">{t("tipsShowOnJumbotron")}</TipsButton>
             </Link>
             <TipsButton

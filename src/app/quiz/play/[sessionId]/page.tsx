@@ -42,7 +42,6 @@ export default function PlayPage() {
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [textAnswer, setTextAnswer] = useState("");
-  const [hasAnswered, setHasAnswered] = useState(false);
   const [myScore, setMyScore] = useState(0);
 
   useEffect(() => {
@@ -62,26 +61,29 @@ export default function PlayPage() {
   });
 
   useEffect(() => {
-    if (participant) setMyScore(participant.totalScore);
-  }, [participant]);
-
-  useEffect(() => {
-    setHasAnswered(false);
     setSelectedOptionId(null);
     setTextAnswer("");
   }, [state?.currentQuestion?.quizQuestionId]);
 
+  // Prefer live socket scores (all participants carry points). tRPC is only a
+  // fallback before the first session_state — top-5 leaderboard alone is not enough.
   useEffect(() => {
-    if (state && participant) {
-      const myEntry = state.leaderboard.find((e) => e.id === participant.id);
-      if (myEntry) setMyScore(myEntry.points);
+    if (!participant) return;
+    const fromState =
+      state?.participants.find((p) => p.id === participant.id)?.points ??
+      state?.leaderboard.find((e) => e.id === participant.id)?.points;
+    if (typeof fromState === "number") {
+      setMyScore(fromState);
+      return;
     }
+    setMyScore(participant.totalScore);
   }, [state, participant]);
 
   const handleSelectOption = (optionId: string) => {
-    if (hasAnswered || state?.status !== "QUESTION_ACTIVE") return;
+    if (state?.status !== "QUESTION_ACTIVE") return;
+    // One tap selects and saves; another tap on a different option changes it.
+    if (optionId === selectedOptionId) return;
     setSelectedOptionId(optionId);
-    setHasAnswered(true);
     if (state?.currentQuestion) {
       submitAnswer({
         quizQuestionId: state.currentQuestion.quizQuestionId,
@@ -91,9 +93,7 @@ export default function PlayPage() {
   };
 
   const handleSubmitText = () => {
-    if (hasAnswered || !textAnswer.trim() || state?.status !== "QUESTION_ACTIVE")
-      return;
-    setHasAnswered(true);
+    if (!textAnswer.trim() || state?.status !== "QUESTION_ACTIVE") return;
     if (state?.currentQuestion) {
       submitAnswer({
         quizQuestionId: state.currentQuestion.quizQuestionId,

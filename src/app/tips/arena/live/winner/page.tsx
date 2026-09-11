@@ -8,8 +8,8 @@ import { api } from "~/trpc/react";
 
 export default function TipsArenaLiveWinnerPage() {
   const { t } = useI18n();
-  const live = api.tips.liveMatch.useQuery(undefined, {
-    refetchInterval: 10_000,
+  const live = api.tips.liveWinnerMatch.useQuery(undefined, {
+    refetchInterval: 5_000,
   });
 
   if (live.isLoading) {

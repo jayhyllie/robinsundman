@@ -12,6 +12,8 @@ export type ParticipantSummary = {
   name: string;
   company: string;
   initials: string;
+  /** Live session total — used so players outside top-5 still get score updates. */
+  points: number;
 };
 
 export type QuestionOptionPayload = {

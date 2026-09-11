@@ -154,6 +154,7 @@ async function buildSessionState(sessionId: string, forAdmin = false) {
       id: p.id,
       name: p.playerName,
       company: p.company.name,
+      points: p.totalScore,
       initials: p.playerName
         .split(" ")
         .map((n: string) => n[0])

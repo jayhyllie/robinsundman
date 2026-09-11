@@ -67,15 +67,28 @@ function dayKey(d: Date) {
   return stockholmDay.format(d);
 }
 
-const LIVE_STATUS_PRIORITY: Record<string, number> = {
+const ARENA_LIVE_PRIORITY: Record<string, number> = {
   OPEN: 0,
-  RESULT_REGISTERED: 1,
-  WINNER_PICKED: 2,
-  CLOSED: 3,
+  CLOSED: 1,
+  RESULT_REGISTERED: 2,
+  WINNER_PICKED: 3,
 };
 
-/** Today's match for jumbotron (`/tips/arena/live`), Europe/Stockholm calendar day. */
-async function findLiveMatch(db: PrismaClient) {
+/** Prefer a drawn winner on the jumbotron winner screen. */
+const WINNER_LIVE_PRIORITY: Record<string, number> = {
+  WINNER_PICKED: 0,
+  RESULT_REGISTERED: 1,
+  CLOSED: 2,
+  OPEN: 3,
+};
+
+type LiveMatchPurpose = "arena" | "winner";
+
+/** Today's match for jumbotron, Europe/Stockholm calendar day. */
+async function findLiveMatch(
+  db: PrismaClient,
+  purpose: LiveMatchPurpose = "arena",
+) {
   const matches = await db.predictionMatch.findMany({
     where: { status: { not: "DRAFT" } },
     include: matchInclude,
@@ -84,14 +97,16 @@ async function findLiveMatch(db: PrismaClient) {
 
   const today = dayKey(new Date());
   const todays = matches.filter((m) => dayKey(m.puckDropAt) === today);
+  const priority =
+    purpose === "winner" ? WINNER_LIVE_PRIORITY : ARENA_LIVE_PRIORITY;
 
   const pickBest = (
     list: typeof matches,
   ): (typeof matches)[number] | null => {
     if (list.length === 0) return null;
     return [...list].sort((a, b) => {
-      const pa = LIVE_STATUS_PRIORITY[a.status] ?? 99;
-      const pb = LIVE_STATUS_PRIORITY[b.status] ?? 99;
+      const pa = priority[a.status] ?? 99;
+      const pb = priority[b.status] ?? 99;
       if (pa !== pb) return pa - pb;
       return (
         Math.abs(a.puckDropAt.getTime() - Date.now()) -
@@ -100,14 +115,27 @@ async function findLiveMatch(db: PrismaClient) {
     })[0]!;
   };
 
-  return (
-    pickBest(todays) ?? pickBest(matches.filter((m) => m.status === "OPEN"))
-  );
+  const fallback =
+    purpose === "winner"
+      ? matches.filter((m) =>
+          ["WINNER_PICKED", "RESULT_REGISTERED", "CLOSED"].includes(m.status),
+        )
+      : matches.filter((m) => m.status === "OPEN");
+
+  return pickBest(todays) ?? pickBest(fallback);
 }
 
 export const tipsRouter = createTRPCRouter({
   liveMatch: publicProcedure.query(async ({ ctx }) => {
-    const match = await findLiveMatch(ctx.db);
+    const match = await findLiveMatch(ctx.db, "arena");
+    if (!match) return null;
+    const status = await ensureLazyClose(ctx.db, match);
+    return { ...match, status };
+  }),
+
+  /** Match for `/tips/arena/live/winner` — prefers WINNER_PICKED over OPEN. */
+  liveWinnerMatch: publicProcedure.query(async ({ ctx }) => {
+    const match = await findLiveMatch(ctx.db, "winner");
     if (!match) return null;
     const status = await ensureLazyClose(ctx.db, match);
     return { ...match, status };
