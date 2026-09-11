@@ -48,7 +48,6 @@ export function CountdownBlocks({
         { label: t("tipsSec"), value: pad(parts.seconds) },
       ]
     : [
-        { label: t("tipsDays"), value: pad(parts.days) },
         { label: t("tipsHrs"), value: pad(parts.hours) },
         { label: t("tipsMin"), value: pad(parts.minutes) },
         { label: t("tipsSec"), value: pad(parts.seconds) },

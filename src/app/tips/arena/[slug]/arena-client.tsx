@@ -72,11 +72,8 @@ export function ArenaClient({ slug }: { slug: string }) {
               size="xxl"
             />
             <div>
-              <p className="tips-display text-4xl md:text-5xl">
+              <p className="tips-display text-4xl md:text-9xl">
                 <span className="mx-3 text-[--tips-muted]">VS</span>
-              </p>
-              <p className="mt-1 text-sm text-[--tips-muted]">
-                {t("tipsFinalScorePrediction")}
               </p>
             </div>
             <TeamCrest
