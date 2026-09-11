@@ -16,6 +16,7 @@ import { api } from "~/trpc/react";
 export default function HomePage() {
   const { t, locale } = useI18n();
   const { homeBgImageUrl } = useBranding();
+  const homeBg = homeBgImageUrl ?? "/images/quizhome.png";
   const utils = api.useUtils();
   const ensureDefaults = api.leaderboard.ensureDefaultsPublic.useMutation({
     onSuccess: () => void utils.leaderboard.getActivePeriods.invalidate(),
@@ -67,7 +68,7 @@ export default function HomePage() {
   return (
     <SidebarShell>
       <div className="relative isolate min-h-full">
-        <HeroBackground imageUrl={homeBgImageUrl} />
+        <HeroBackground imageUrl={homeBg} />
 
         <div className="relative z-10 grid gap-6 px-6">
         <div className="flex flex-col gap-6 border-b border-[--tips-glass-border] px-6 py-2 md:py-4 lg:flex-row lg:items-end lg:justify-between lg:py-8">

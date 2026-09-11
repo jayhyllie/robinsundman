@@ -161,6 +161,7 @@ export default function JoinPage() {
   const router = useRouter();
   const { t, locale } = useI18n();
   const { joinBgImageUrl } = useBranding();
+  const joinBg = joinBgImageUrl ?? "/images/quizjoin.png";
   const code = params.code.toUpperCase();
   const mounted = useMounted();
 
@@ -310,7 +311,7 @@ export default function JoinPage() {
 
   if (!mounted || isLoading) {
     return (
-      <MobileShell bgImage={joinBgImageUrl}>
+      <MobileShell bgImage={joinBg}>
         <p className="text-center text-muted-foreground">{t("rejoining")}</p>
       </MobileShell>
     );
@@ -318,7 +319,7 @@ export default function JoinPage() {
 
   if (!session) {
     return (
-      <MobileShell bgImage={joinBgImageUrl}>
+      <MobileShell bgImage={joinBg}>
         <p className="text-center text-destructive">Quiz not found</p>
       </MobileShell>
     );
@@ -328,7 +329,7 @@ export default function JoinPage() {
   const canJoin = companyConfirmed && playerName.trim().length > 0;
 
   return (
-    <MobileShell bgImage={joinBgImageUrl} showLogo={false}>
+    <MobileShell bgImage={joinBg} showLogo={false}>
       <AppTitle subtitle={t("tagline")} />
 
       <div className="my-4 flex flex-wrap justify-center gap-2">
