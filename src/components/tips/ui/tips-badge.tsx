@@ -8,7 +8,7 @@ import type { TranslationKey } from "~/i18n/translations";
 import { cn } from "~/lib/utils";
 
 const tipsBadgeVariants = cva(
-  "inline-flex items-center gap-1.5 rounded-[var(--tips-radius-pill)] px-3 py-1 font-[family-name:var(--tips-font-body)] text-[10px] font-extrabold tracking-[0.16em] uppercase",
+  "inline-flex items-center gap-1.5 rounded-[var(--tips-radius-pill)] px-3 py-1 font-[family-name:var(--tips-font-body)] text-[10px] md:text-[20px] font-extrabold tracking-[0.16em] uppercase",
   {
     variants: {
       status: {
@@ -55,7 +55,7 @@ export function TipsBadge({
   return (
     <span className={cn(tipsBadgeVariants({ status }), className)}>
       {liveDot || status === "OPEN" || status === "LIVE" ? (
-        <span className="tips-live-dot size-1.5 rounded-full bg-[var(--tips-ice-highlight)]" />
+        <span className="tips-live-dot size-1.5 rounded-full bg-[--tips-ice-highlight]" />
       ) : null}
       {label}
     </span>

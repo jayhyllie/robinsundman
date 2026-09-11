@@ -69,13 +69,11 @@ export function ArenaClient({ slug }: { slug: string }) {
             <TeamCrest
               name={match.homeTeam.name}
               logoUrl={match.homeTeam.logoUrl}
-              size="lg"
+              size="xxl"
             />
             <div>
               <p className="tips-display text-4xl md:text-5xl">
-                {match.homeTeam.shortName}
-                <span className="mx-3 text-[--tips-muted]">{t("tipsVs")}</span>
-                {match.awayTeam.shortName}
+                <span className="mx-3 text-[--tips-muted]">VS</span>
               </p>
               <p className="mt-1 text-sm text-[--tips-muted]">
                 {t("tipsFinalScorePrediction")}
@@ -84,7 +82,7 @@ export function ArenaClient({ slug }: { slug: string }) {
             <TeamCrest
               name={match.awayTeam.name}
               logoUrl={match.awayTeam.logoUrl}
-              size="lg"
+              size="xxl"
             />
           </div>
 
@@ -94,7 +92,7 @@ export function ArenaClient({ slug }: { slug: string }) {
           </div>
 
           <p className="text-xl text-[--tips-muted]">
-            <span className="tips-display tips-ice-text text-4xl tabular-nums">
+            <span className="tips-display tips-ice-text text-9xl tabular-nums">
               {count.toLocaleString("sv-SE")}
             </span>{" "}
             {t("tipsFansAlreadyTipped")}

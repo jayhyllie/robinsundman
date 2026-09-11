@@ -6,6 +6,8 @@ const sizes = {
   sm: 34,
   md: 54,
   lg: 76,
+  xl: 100,
+  xxl: 200,
 } as const;
 
 export function TeamCrest({
@@ -30,7 +32,7 @@ export function TeamCrest({
   return (
     <div
       className={cn(
-        "relative flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--tips-glass-border)] bg-[var(--tips-glass-bg)]",
+        "relative flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-[--tips-glass-border] bg-[--tips-glass-bg]",
         className,
       )}
       style={{ width: px, height: px }}
@@ -47,7 +49,7 @@ export function TeamCrest({
         />
       ) : (
         <span
-          className="tips-display text-[var(--tips-club-lime)]"
+          className="tips-display text-[--tips-club-lime]"
           style={{ fontSize: px * 0.32 }}
         >
           {initials}

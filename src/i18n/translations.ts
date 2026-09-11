@@ -320,7 +320,7 @@ export const translations = {
     tipsPredictDot: "Gissa.",
     tipsWin: "Vinn.",
     tipsFinalScorePrediction: "Gissa slutresultat · Nedräkning till puck drop",
-    tipsFansAlreadyTipped: "fans har redan gissat",
+    tipsFansAlreadyTipped: "har redan gissat",
     tipsScanToTip: "Scanna för att gissa i mobilen",
     tipsTonightsWinner: "Kvällens vinnare",
     tipsPredictedExactScore: "Gissade exakt resultat",

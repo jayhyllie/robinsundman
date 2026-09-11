@@ -61,10 +61,10 @@ export function CountdownBlocks({
           key={b.label}
           className="tips-glass flex min-w-17 flex-1 flex-col items-center px-2 py-3"
         >
-          <span className="tips-display text-3xl tabular-nums text-[--tips-rink-white] md:text-4xl">
+          <span className="tips-display text-9xl tabular-nums text-[--tips-rink-white]">
             {b.value}
           </span>
-          <span className="mt-1 text-[10px] font-bold tracking-[0.16em] text-[--tips-muted] uppercase">
+          <span className="mt-1 text-[20px] font-bold tracking-[0.16em] text-[--tips-muted] uppercase">
             {b.label}
           </span>
         </div>
