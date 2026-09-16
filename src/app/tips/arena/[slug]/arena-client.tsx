@@ -41,44 +41,37 @@ export function ArenaClient({ slug }: { slug: string }) {
   }
 
   return (
-    <TipsScope className="flex min-h-svh flex-col px-8 py-8 lg:px-14 lg:py-10 relative">
-      {presentedBy ? (
-        <div className="flex items-center gap-3 absolute top-4 left-14">
-          <span className="tips-label text-(--tips-trophy-gold)!">
-            {t("tipsPresentedBy")}
-          </span>
-          {presentedBy.logoUrl ? (
-            <Image
-              src={presentedBy.logoUrl}
-              alt={presentedBy.name}
-              width={400}
-              height={400}
-              className="w-64 h-auto object-contain"
-            />
-          ) : (
-            <span className="tips-display text-2xl tips-gold-text">
-              {presentedBy.name}
-            </span>
-          )}
-        </div>
-      ) : null}
-
+    <TipsScope className="flex min-h-svh flex-col p-8">
       <div className="grid flex-1 gap-10 lg:grid-cols-2 lg:items-center">
         <div className="tips-animate-reveal space-y-8">
           <div className="flex justify-between">
-            <h1 className="tips-display text-6xl leading-[0.9] md:text-7xl lg:text-8xl">
+            <h1 className="tips-display text-6xl leading-none md:text-7xl lg:text-8xl">
               {t("tipsScan")}
               <br />
               {t("tipsPredictDot")}
               <br />
               <span className="tips-ice-text">{t("tipsWin")}</span>
             </h1>
-            <p className="text-4xl text-[--tips-muted]">
-              <span className="tips-display tips-ice-text text-9xl tabular-nums">
-                {count.toLocaleString("sv-SE")}
-              </span>{" "}
-              {t("tipsFansAlreadyTipped")}
-            </p>
+            {presentedBy ? (
+              <div className="flex flex-col items-center gap-3">
+                <span className="tips-label text-(--tips-trophy-gold)!">
+                  {t("tipsPresentedBy")}
+                </span>
+                {presentedBy.logoUrl ? (
+                  <Image
+                    src={presentedBy.logoUrl}
+                    alt={presentedBy.name}
+                    width={400}
+                    height={400}
+                    className="w-64 h-auto object-contain"
+                  />
+                ) : (
+                  <span className="tips-display text-2xl tips-gold-text">
+                    {presentedBy.name}
+                  </span>
+                )}
+              </div>
+            ) : null}
           </div>
 
           <div className="flex items-center gap-6">
@@ -103,6 +96,12 @@ export function ArenaClient({ slug }: { slug: string }) {
             <p className="tips-label mb-3">{t("tipsPuckDrop")}</p>
             <CountdownBlocks target={match.puckDropAt} className="max-w-xl" />
           </div>
+          <p className="text-4xl text-[--tips-muted]">
+              <span className="tips-display tips-ice-text text-9xl tabular-nums">
+                {count.toLocaleString("sv-SE")}
+              </span>{" "}
+              {t("tipsFansAlreadyTipped")}
+            </p>
         </div>
 
         <TipsGlassCard className="bg-none border-none mx-auto flex w-full flex-col items-center gap-5 p-8 tips-animate-reveal">

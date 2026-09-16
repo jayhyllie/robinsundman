@@ -10,7 +10,7 @@ export function TipsScope({
   className?: string;
 }) {
   return (
-    <div className={cn("tips-scope tips-bg min-h-svh", className)}>
+    <div className={cn("tips-scope bg-[#144729] min-h-svh", className)}>
       {children}
     </div>
   );
