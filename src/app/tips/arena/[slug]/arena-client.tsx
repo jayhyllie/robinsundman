@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { QRCodeSVG } from "qrcode.react";
 
 import { useI18n } from "~/components/providers/i18n-provider";
@@ -23,11 +24,13 @@ export function ArenaClient({ slug }: { slug: string }) {
     { slug },
     { refetchInterval: 3_000 },
   );
+  const sponsors = api.tips.sponsorsList.useQuery();
 
   const match = matchQuery.data;
   const count = statsQuery.data?.predictionCount ?? match?.predictionCount ?? 0;
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   const joinUrl = `${appUrl}/tips/m/${slug}`;
+  const presentedBy = sponsors.data?.[0];
 
   if (!match) {
     return (
@@ -38,22 +41,27 @@ export function ArenaClient({ slug }: { slug: string }) {
   }
 
   return (
-    <TipsScope className="flex min-h-svh flex-col px-8 py-8 lg:px-14 lg:py-10">
-      <div className="mb-6 flex items-center justify-between">
-        <TipsBadge status="LIVE" liveDot>
-          {t("tipsLiveTipping")}
-        </TipsBadge>
-        {match.sponsor ? (
-          <div className="flex items-center gap-3">
-            <span className="tips-label text-(--tips-trophy-gold)!">
-              {t("tipsPresentedBy")}
-            </span>
+    <TipsScope className="flex min-h-svh flex-col px-8 py-8 lg:px-14 lg:py-10 relative">
+      {presentedBy ? (
+        <div className="flex items-center gap-3 absolute top-4 left-14">
+          <span className="tips-label text-(--tips-trophy-gold)!">
+            {t("tipsPresentedBy")}
+          </span>
+          {presentedBy.logoUrl ? (
+            <Image
+              src={presentedBy.logoUrl}
+              alt={presentedBy.name}
+              width={400}
+              height={400}
+              className="w-64 h-auto object-contain"
+            />
+          ) : (
             <span className="tips-display text-2xl tips-gold-text">
-              {match.sponsor.name}
+              {presentedBy.name}
             </span>
-          </div>
-        ) : null}
-      </div>
+          )}
+        </div>
+      ) : null}
 
       <div className="grid flex-1 gap-10 lg:grid-cols-2 lg:items-center">
         <div className="tips-animate-reveal space-y-8">

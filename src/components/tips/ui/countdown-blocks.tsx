@@ -22,11 +22,9 @@ function diffParts(target: Date) {
 export function CountdownBlocks({
   target,
   className,
-  compact,
 }: {
   target: Date | string;
   className?: string;
-  compact?: boolean;
 }) {
   const { t } = useI18n();
   const end = useMemo(
@@ -41,17 +39,12 @@ export function CountdownBlocks({
     return () => clearInterval(id);
   }, [end]);
 
-  const blocks = compact
-    ? [
-        { label: t("tipsHrs"), value: pad(parts.days * 24 + parts.hours) },
-        { label: t("tipsMin"), value: pad(parts.minutes) },
-        { label: t("tipsSec"), value: pad(parts.seconds) },
-      ]
-    : [
-        { label: t("tipsHrs"), value: pad(parts.hours) },
-        { label: t("tipsMin"), value: pad(parts.minutes) },
-        { label: t("tipsSec"), value: pad(parts.seconds) },
-      ];
+  const totalHours = parts.days * 24 + parts.hours;
+  const blocks = [
+    { label: t("tipsHrs"), value: pad(totalHours) },
+    { label: t("tipsMin"), value: pad(parts.minutes) },
+    { label: t("tipsSec"), value: pad(parts.seconds) },
+  ];
 
   return (
     <div className={cn("flex gap-2", className)}>

@@ -192,7 +192,7 @@ export function TipsMobileClient({ slug }: { slug: string }) {
 
           <div>
             <p className="tips-label mb-2">{t("tipsPuckDrop")}</p>
-            <CountdownBlocks target={match.puckDropAt} compact />
+            <CountdownBlocks target={match.puckDropAt} />
           </div>
 
           <div className="flex items-center justify-between">

@@ -365,7 +365,7 @@ export const tipsRouter = createTRPCRouter({
     }),
 
   // ── Sponsors ───────────────────────────────────────────────────────────
-  sponsorsList: protectedProcedure.query(async ({ ctx }) => {
+  sponsorsList: publicProcedure.query(async ({ ctx }) => {
     return ctx.db.sponsor.findMany({ orderBy: { name: "asc" } });
   }),
 

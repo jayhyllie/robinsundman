@@ -61,8 +61,8 @@ export default function TeamsAdminPage() {
         onChange={(e) => setQ(e.target.value)}
       />
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <TipsGlassCard className="space-y-4">
+      <div className="flex gap-6">
+        <TipsGlassCard className="space-y-4 flex-1 h-fit">
           <p className="tips-display text-2xl">
             {editingId ? t("tipsEditTeam") : t("tipsCreateTeam")}
           </p>
