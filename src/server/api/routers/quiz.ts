@@ -303,7 +303,7 @@ export const quizRouter = createTRPCRouter({
           .array(
             z.object({
               questionId: z.string(),
-              timeLimitSec: z.number().int().min(5).max(300).default(10),
+              timeLimitSec: z.number().int().min(5).max(300).default(15),
             }),
           )
           .min(1),
@@ -344,7 +344,7 @@ export const quizRouter = createTRPCRouter({
           .array(
             z.object({
               questionId: z.string(),
-              timeLimitSec: z.number().int().min(5).max(300).default(10),
+              timeLimitSec: z.number().int().min(5).max(300).default(15),
             }),
           )
           .min(1)
@@ -902,8 +902,8 @@ export const leaderboardRouter = createTRPCRouter({
 const tenantDefaults = {
   appName: "ÖIK BUSINESS CLUB",
   challengeTag: "CHALLENGE",
-  taglineSv: "5 frågor – 10 sekunder per fråga – Tävla mot andra företag!",
-  taglineEn: "5 questions – 10 seconds per question – Compete against companies!",
+  taglineSv: "5 frågor – 15 sekunder per fråga – Tävla mot andra företag!",
+  taglineEn: "5 questions – 15 seconds per question – Compete against companies!",
   primaryColor: "#a4c639",
   primaryBrightColor: "#39ff14",
   accentColor: "#ffd700",

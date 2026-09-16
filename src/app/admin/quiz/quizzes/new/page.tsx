@@ -21,7 +21,7 @@ type SelectedQuestion = {
   timeLimitSec: number;
 };
 
-const DEFAULT_MC_SECONDS = 10;
+const DEFAULT_MC_SECONDS = 15;
 const DEFAULT_FREE_TEXT_SECONDS = 30;
 
 export default function NewQuizPage() {

@@ -35,8 +35,8 @@ export type TenantBranding = {
 const defaults: TenantBranding = {
   appName: "ÖIK BUSINESS CLUB",
   challengeTag: "CHALLENGE",
-  taglineSv: "5 frågor – 10 sekunder per fråga – Tävla mot andra företag!",
-  taglineEn: "5 questions – 10 seconds per question – Compete against companies!",
+  taglineSv: "10 frågor – 15 sekunder per fråga – Tävla mot andra företag!",
+  taglineEn: "10 questions – 15 seconds per question – Compete against companies!",
   ...BRANDING_COLOR_DEFAULTS,
   logoUrl: null,
   faviconUrl: null,
