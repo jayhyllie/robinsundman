@@ -160,36 +160,25 @@ export default function HostPanelClient() {
               {state.participantCount} {t("playersInLobby")}
             </Badge>
           </CardHeader>
-          <CardContent className="grid gap-6 md:grid-cols-[auto_1fr]">
-            <QrDisplay url={`${appUrl}/quiz/join/${joinCode}`} size={200} />
-            <div>
-              {state.participants.length === 0 ? (
-                <p className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                  {t("scanQr")}
-                </p>
-              ) : (
-                <div className="grid max-h-80 grid-cols-2 gap-2 overflow-y-auto pr-1 sm:grid-cols-3 lg:grid-cols-4">
-                  {state.participants.map((p) => (
-                    <div
-                      key={p.id}
-                      className="animate-in fade-in slide-in-from-bottom-1 flex items-center gap-2 rounded-lg border border-border/50 bg-card/50 p-2 duration-300"
-                    >
-                      <Avatar className="h-8 w-8 shrink-0">
-                        <AvatarFallback className="bg-primary/20 text-xs text-primary">
-                          {p.initials}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="min-w-0">
-                        <div className="truncate text-xs font-semibold">{p.name}</div>
-                        <div className="truncate text-[10px] text-muted-foreground">
-                          {p.company}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+          <CardContent className="grid gap-2 md:grid-cols-[auto_1fr]">
+            {state.participants.map((p) => (
+              <div
+                key={p.id}
+                className="animate-in fade-in slide-in-from-bottom-1 flex items-center gap-2 rounded-lg border border-border/50 bg-card/50 p-2 duration-300"
+              >
+                <Avatar className="h-8 w-8 shrink-0">
+                  <AvatarFallback className="bg-primary/20 text-xs text-primary">
+                    {p.initials}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <div className="truncate text-xs font-semibold">{p.name}</div>
+                  <div className="truncate text-[10px] text-muted-foreground">
+                    {p.company}
+                  </div>
                 </div>
-              )}
-            </div>
+              </div>
+            ))}
           </CardContent>
         </Card>
       ) : (
