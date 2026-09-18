@@ -53,7 +53,7 @@ export function ArenaClient({ slug }: { slug: string }) {
               <span className="tips-ice-text">{t("tipsWin")}</span>
             </h1>
             {presentedBy ? (
-              <div className="flex flex-col items-center gap-3">
+              <div className="flex flex-col items-center gap-0">
                 <span className="tips-label text-(--tips-trophy-gold)!">
                   {t("tipsPresentedBy")}
                 </span>
@@ -63,7 +63,7 @@ export function ArenaClient({ slug }: { slug: string }) {
                     alt={presentedBy.name}
                     width={400}
                     height={400}
-                    className="w-64 h-auto object-contain"
+                    className="w-88 h-auto object-contain"
                   />
                 ) : (
                   <span className="tips-display text-2xl tips-gold-text">
