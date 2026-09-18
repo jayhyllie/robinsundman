@@ -133,6 +133,22 @@ export const tipsRouter = createTRPCRouter({
     return { ...match, status };
   }),
 
+  /** Next upcoming (or just-started) non-draft match for homepage widget. */
+  nextHomeMatch: publicProcedure.query(async ({ ctx }) => {
+    const cutoff = new Date(Date.now() - 3 * 60 * 60 * 1000);
+    return ctx.db.predictionMatch.findFirst({
+      where: {
+        status: { not: "DRAFT" },
+        puckDropAt: { gte: cutoff },
+      },
+      include: {
+        homeTeam: true,
+        awayTeam: true,
+      },
+      orderBy: { puckDropAt: "asc" },
+    });
+  }),
+
   /** Match for `/tips/arena/live/winner` — prefers WINNER_PICKED over OPEN. */
   liveWinnerMatch: publicProcedure.query(async ({ ctx }) => {
     const match = await findLiveMatch(ctx.db, "winner");

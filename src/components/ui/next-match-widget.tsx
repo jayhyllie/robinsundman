@@ -3,18 +3,40 @@
 import { useBranding } from "~/components/providers/branding-provider";
 import { useI18n } from "~/components/providers/i18n-provider";
 import { cn } from "~/lib/utils";
+import { api } from "~/trpc/react";
 
 type NextMatchWidgetProps = {
   className?: string;
   variant?: "compact" | "promo";
 };
 
+function formatMatchWhen(date: Date, locale: "sv" | "en") {
+  const dayMonth = new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "sv-SE", {
+    day: "numeric",
+    month: "long",
+  }).format(date);
+  const time = new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "sv-SE", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+  return `${dayMonth}, ${time}`;
+}
+
 export function NextMatchWidget({
   className,
   variant = "compact",
 }: NextMatchWidgetProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { nextMatchBgImageUrl, clubShort } = useBranding();
+  const { data: match, isLoading } = api.tips.nextHomeMatch.useQuery();
+
+  const homeLabel = match?.homeTeam.shortName ?? clubShort;
+  const awayLabel = match?.awayTeam.shortName;
+  const headline =
+    match && awayLabel ? `${homeLabel} vs ${awayLabel}` : null;
+  const when = match
+    ? formatMatchWhen(new Date(match.puckDropAt), locale)
+    : null;
 
   if (variant === "promo") {
     if (nextMatchBgImageUrl) {
@@ -30,8 +52,20 @@ export function NextMatchWidget({
             <div className="mb-1 text-lg font-bold tracking-wide text-white uppercase">
               {t("nextHomeMatch")}
             </div>
-            <div className="text-2xl font-semibold text-white">{clubShort} vs AIK</div>
-            <div className="text-sm text-muted-foreground">5 februari, 19:00</div>
+            {isLoading ? (
+              <div className="h-8 w-40 animate-pulse rounded bg-white/10" />
+            ) : headline && when ? (
+              <>
+                <div className="text-2xl font-semibold text-white">
+                  {headline}
+                </div>
+                <div className="text-sm text-muted-foreground">{when}</div>
+              </>
+            ) : (
+              <div className="text-sm text-muted-foreground">
+                {t("noUpcomingHomeMatch")}
+              </div>
+            )}
           </div>
           {/* Desktop: image + overlay */}
           <div
@@ -51,8 +85,20 @@ export function NextMatchWidget({
               <div className="mb-1 flex items-center gap-2 text-lg font-bold tracking-wide text-white uppercase">
                 {t("nextHomeMatch")}
               </div>
-              <div className="text-2xl font-semibold text-white">{clubShort} vs AIK</div>
-              <div className="text-sm text-muted-foreground">5 februari, 19:00</div>
+              {isLoading ? (
+                <div className="h-8 w-48 animate-pulse rounded bg-white/10" />
+              ) : headline && when ? (
+                <>
+                  <div className="text-2xl font-semibold text-white">
+                    {headline}
+                  </div>
+                  <div className="text-sm text-muted-foreground">{when}</div>
+                </>
+              ) : (
+                <div className="text-sm text-muted-foreground">
+                  {t("noUpcomingHomeMatch")}
+                </div>
+              )}
             </div>
           </div>
         </>
@@ -90,11 +136,21 @@ export function NextMatchWidget({
       )}
       <section className="p-3">
         <div className="mb-1 flex items-center gap-2 text-primary uppercase">
-          {/* <CalendarClock className="h-3 w-3" /> */}
           {t("nextHomeMatch").toLocaleUpperCase()}
         </div>
-        <div className="text-xl font-semibold text-white">{clubShort} vs AIK</div>
-        <div className="uppercase text-muted-foreground">5 februari, 19:00</div>
+        {isLoading ? (
+          <div className="space-y-2">
+            <div className="h-6 w-36 animate-pulse rounded bg-white/10" />
+            <div className="h-4 w-28 animate-pulse rounded bg-white/10" />
+          </div>
+        ) : headline && when ? (
+          <>
+            <div className="text-xl font-semibold text-white">{headline}</div>
+            <div className="uppercase text-muted-foreground">{when}</div>
+          </>
+        ) : (
+          <div className="text-muted-foreground">{t("noUpcomingHomeMatch")}</div>
+        )}
       </section>
     </div>
   );
