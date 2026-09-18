@@ -42,7 +42,7 @@ export function JumboArenaClient({ slug }: { slug: string }) {
   return (
     <JumboFrame>
       <div className="grid h-full grid-cols-[1.15fr_0.85fr] gap-6 px-7 py-5">
-        <div className="tips-animate-reveal flex min-h-0 flex-col justify-between">
+        <div className="tips-animate-reveal flex min-h-0 flex-col justify-center gap-3">
           <div className="relative pr-28">
             <h1 className="tips-display text-[56px] leading-[0.92]">
               {t("tipsScan")}
@@ -57,7 +57,7 @@ export function JumboArenaClient({ slug }: { slug: string }) {
                 alt={presentedBy.name}
                 width={200}
                 height={200}
-                className="absolute top-0 right-0 w-64 h-auto object-contain"
+                className="absolute -top-4 right-0 w-80 h-auto object-contain"
               />
             ) : null}
           </div>
@@ -96,7 +96,7 @@ export function JumboArenaClient({ slug }: { slug: string }) {
         </div>
 
         <div className="flex h-full flex-col items-center justify-center gap-3 border-none bg-transparenttips-animate-reveal">
-            <QRCodeSVG value={joinUrl} size={420} level="M" />
+            <QRCodeSVG value={joinUrl} size={380} level="M" />
           <p className="tips-label text-center text-[11px]!">
             {t("tipsScanToTip")}
           </p>
