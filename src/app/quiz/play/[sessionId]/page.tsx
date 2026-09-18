@@ -152,14 +152,6 @@ export default function PlayPage() {
                 </p>
               </div>
 
-              {participant && (
-                <div className="tips-glass rounded-[--tips-radius-sm] px-4 py-2 text-sm">
-                  <span className="text-[--tips-muted]">{t("registeredAs")} </span>
-                  <span className="font-extrabold tips-gold-text">{participant.playerName}</span>
-                  <span className="text-[--tips-muted]"> — {participant.company.name}</span>
-                </div>
-              )}
-
               {!connected && (
                 <p className="text-xs text-[--tips-muted]">{t("rejoining")}</p>
               )}
@@ -228,7 +220,9 @@ export default function PlayPage() {
         )}
       </main>
 
-      {state && state.leaderboard.length > 0 && (
+      {state &&
+        state.leaderboard.length > 0 &&
+        state.leaderboard.some((e) => e.points > 0) && (
         <div className="relative z-10 px-4 pb-4">
           <Leaderboard
             entries={state.leaderboard}
