@@ -123,3 +123,57 @@
 .tips-live-dot {
   animation: tips-pulse-soft 1.6s ease-in-out infinite;
 }
+
+@keyframes tips-pip-ignite {
+  0%,
+  100% {
+    opacity: 0.22;
+    transform: scale(0.85);
+    background: color-mix(in srgb, var(--tips-rink-white) 18%, transparent);
+    box-shadow: none;
+  }
+  12%,
+  28% {
+    opacity: 1;
+    transform: scale(1);
+    background: var(--tips-ice-highlight);
+    box-shadow: 0 0 14px rgba(57, 255, 20, 0.55);
+  }
+  40%,
+  88% {
+    opacity: 0.35;
+    transform: scale(0.9);
+    background: color-mix(in srgb, var(--tips-club-lime) 35%, transparent);
+    box-shadow: none;
+  }
+}
+
+.tips-waiting-pips {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.tips-waiting-pip {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 999px;
+  animation: tips-pip-ignite 2.4s ease-in-out infinite;
+}
+
+.tips-waiting-pip:nth-child(1) {
+  animation-delay: 0s;
+}
+.tips-waiting-pip:nth-child(2) {
+  animation-delay: 0.28s;
+}
+.tips-waiting-pip:nth-child(3) {
+  animation-delay: 0.56s;
+}
+.tips-waiting-pip:nth-child(4) {
+  animation-delay: 0.84s;
+}
+.tips-waiting-pip:nth-child(5) {
+  animation-delay: 1.12s;
+}

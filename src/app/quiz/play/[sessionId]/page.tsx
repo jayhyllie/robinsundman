@@ -137,12 +137,15 @@ export default function PlayPage() {
       <main className="relative z-10 flex-1 px-4 py-4">
         {state?.status === "LOBBY" && (
           <TipsGlassCard className="flex flex-col items-center gap-6 py-12 text-center tips-animate-reveal">
-              <div className="relative flex h-24 w-24 items-center justify-center">
-                <span className="absolute inline-flex h-24 w-24 animate-ping rounded-full bg-[--tips-club-lime]/20" />
-                <span className="absolute inline-flex h-16 w-16 animate-ping rounded-full bg-[--tips-trophy-gold]/20 [animation-delay:300ms]" />
-                <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-[--tips-glass-active] text-[--tips-club-lime]">
-                  <Users className="h-6 w-6" />
-                </span>
+              <div
+                className="tips-waiting-pips py-4"
+                aria-hidden
+              >
+                <span className="tips-waiting-pip" />
+                <span className="tips-waiting-pip" />
+                <span className="tips-waiting-pip" />
+                <span className="tips-waiting-pip" />
+                <span className="tips-waiting-pip" />
               </div>
 
               <div>
