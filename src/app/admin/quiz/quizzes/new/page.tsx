@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -47,6 +48,8 @@ export default function NewQuizPage() {
     onError: (e) => toast.error(e.message),
   });
 
+  const bankById = new Map(bankQuestions?.map((q) => [q.id, q]) ?? []);
+
   const toggleQuestion = (id: string, type: "MULTIPLE_CHOICE" | "FREE_TEXT") => {
     setSelectedQuestions((prev) => {
       if (prev.some((q) => q.questionId === id)) {
@@ -75,6 +78,40 @@ export default function NewQuizPage() {
     );
   };
 
+  const moveQuestion = (index: number, direction: -1 | 1) => {
+    setSelectedQuestions((prev) => {
+      const nextIndex = index + direction;
+      if (nextIndex < 0 || nextIndex >= prev.length) return prev;
+      const next = [...prev];
+      const [item] = next.splice(index, 1);
+      if (!item) return prev;
+      next.splice(nextIndex, 0, item);
+      return next;
+    });
+  };
+
+  const selectAllQuestions = () => {
+    if (!bankQuestions?.length) return;
+    setSelectedQuestions((prev) => {
+      const existing = new Map(prev.map((q) => [q.questionId, q]));
+      return bankQuestions.map((q) => {
+        const already = existing.get(q.id);
+        if (already) return already;
+        return {
+          questionId: q.id,
+          timeLimitSec:
+            q.type === "FREE_TEXT"
+              ? DEFAULT_FREE_TEXT_SECONDS
+              : DEFAULT_MC_SECONDS,
+        };
+      });
+    });
+  };
+
+  const deselectAllQuestions = () => {
+    setSelectedQuestions([]);
+  };
+
   const handleSubmit = (asDraft: boolean) => {
     if (!titleSv.trim() || selectedQuestions.length === 0) {
       toast.error("Title and at least one question required");
@@ -90,6 +127,7 @@ export default function NewQuizPage() {
         : scheduledAt
           ? new Date(scheduledAt)
           : undefined,
+      // Array order is persisted as QuizQuestion.order
       questions: selectedQuestions,
     });
   };
@@ -142,14 +180,48 @@ export default function NewQuizPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>{t("questionBank")}</CardTitle>
-          <p className="text-sm text-muted-foreground">{t("timeLimitHint")}</p>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <CardTitle>{t("questionBank")}</CardTitle>
+              <p className="mt-1.5 text-sm text-muted-foreground">
+                {t("timeLimitHint")}
+              </p>
+            </div>
+            {bankQuestions && bankQuestions.length > 0 ? (
+              <div className="flex shrink-0 gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={selectAllQuestions}
+                  disabled={
+                    selectedQuestions.length === bankQuestions.length
+                  }
+                >
+                  {t("selectAll")}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={deselectAllQuestions}
+                  disabled={selectedQuestions.length === 0}
+                >
+                  {t("deselectAll")}
+                </Button>
+              </div>
+            ) : null}
+          </div>
         </CardHeader>
         <CardContent className="space-y-3">
           {bankQuestions?.map((q) => {
-            const selected = selectedQuestions.find(
+            const selectedIndex = selectedQuestions.findIndex(
               (s) => s.questionId === q.id,
             );
+            const selected =
+              selectedIndex >= 0
+                ? selectedQuestions[selectedIndex]
+                : undefined;
             return (
               <div
                 key={q.id}
@@ -163,7 +235,14 @@ export default function NewQuizPage() {
                     className="mt-1"
                   />
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm font-medium">{q.textSv}</div>
+                    <div className="flex items-center gap-2">
+                      {selectedIndex >= 0 && (
+                        <span className="inline-flex h-5 min-w-5 items-center justify-center rounded bg-primary/20 px-1 text-[11px] font-bold text-primary">
+                          {selectedIndex + 1}
+                        </span>
+                      )}
+                      <div className="text-sm font-medium">{q.textSv}</div>
+                    </div>
                     <div className="text-xs text-muted-foreground">
                       {q.type === "MULTIPLE_CHOICE"
                         ? t("multipleChoice")
@@ -205,6 +284,67 @@ export default function NewQuizPage() {
           )}
         </CardContent>
       </Card>
+
+      {selectedQuestions.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("questionOrder")}</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              {t("questionOrderHint")}
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {selectedQuestions.map((selected, index) => {
+              const q = bankById.get(selected.questionId);
+              return (
+                <div
+                  key={selected.questionId}
+                  className="flex items-center gap-3 rounded-lg border border-border p-3"
+                >
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/15 text-sm font-bold text-primary">
+                    {index + 1}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-sm font-medium">
+                      {q?.textSv ?? selected.questionId}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {q?.type === "FREE_TEXT"
+                        ? t("freeText")
+                        : t("multipleChoice")}{" "}
+                      · {selected.timeLimitSec} {t("secondsShort")}
+                    </div>
+                  </div>
+                  <div className="flex shrink-0 flex-col gap-0.5">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      disabled={index === 0}
+                      aria-label={t("moveUp")}
+                      onClick={() => moveQuestion(index, -1)}
+                    >
+                      <ChevronUp className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      disabled={index === selectedQuestions.length - 1}
+                      aria-label={t("moveDown")}
+                      onClick={() => moveQuestion(index, 1)}
+                    >
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+      )}
 
       <div className="flex gap-3">
         <Button
