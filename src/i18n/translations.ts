@@ -313,7 +313,7 @@ export const translations = {
     tipsConsentBody:
       "Godkänner du att vi använder din e-postadress för framtida nyhetsbrev och erbjudanden från klubben och partners? Du kan tippa oavsett vad du svarar.",
     tipsSending: "Skickar…",
-    tipsConsentYes: "Ja, jag godkänner",
+    tipsConsentYes: "Ja, jag vill gärna ha erbjudanden & nyhetsbrev",
     tipsConsentNo: "Nej tack, bara gissa",
     tipsYoureIn: "Du är med",
     tipsPredictionLocked: "Gissningen är låst",
@@ -658,8 +658,8 @@ export const translations = {
     tipsConsentBody:
       "Do you agree that we use your email for future newsletters and offers from the club and partners? You can tip regardless of your answer.",
     tipsSending: "Sending…",
-    tipsConsentYes: "Yes, I agree",
-    tipsConsentNo: "No thanks, just tip",
+    tipsConsentYes: "Yes, I want offers",
+    tipsConsentNo: "No, just guess",
     tipsYoureIn: "You're in",
     tipsPredictionLocked: "Prediction locked",
     tipsShareTitle: "ÖIK Prediction",

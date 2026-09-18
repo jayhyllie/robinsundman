@@ -313,23 +313,13 @@ export function TipsMobileClient({ slug }: { slug: string }) {
               >
                 {submit.isPending ? t("tipsSending") : t("tipsConsentYes")}
               </TipsButton>
-              <TipsButton
-                size="lg"
-                variant="secondary"
-                className="w-full"
+              <button
+                className="w-full text-[8px]! uppercase text-red bg-transparent border-none h-fit py-1"
                 disabled={submit.isPending}
                 onClick={() => void onSubmit(false)}
               >
                 {t("tipsConsentNo")}
-              </TipsButton>
-              <TipsButton
-                variant="tertiary"
-                className="w-full"
-                disabled={submit.isPending}
-                onClick={() => setConsentOpen(false)}
-              >
-                {t("cancel")}
-              </TipsButton>
+              </button>
             </div>
           </TipsGlassCard>
         </div>
