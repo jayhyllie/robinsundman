@@ -2,10 +2,11 @@
 
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { useI18n } from "~/components/providers/i18n-provider";
+import { TeamCrest } from "~/components/tips/ui";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -15,6 +16,13 @@ import {
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 import { api } from "~/trpc/react";
 
 type SelectedQuestion = {
@@ -24,6 +32,12 @@ type SelectedQuestion = {
 
 const DEFAULT_MC_SECONDS = 15;
 const DEFAULT_FREE_TEXT_SECONDS = 30;
+const NO_MATCH = "__none__";
+
+function toDatetimeLocalValue(date: Date) {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
 
 export default function NewQuizPage() {
   const router = useRouter();
@@ -31,14 +45,30 @@ export default function NewQuizPage() {
 
   const [titleSv, setTitleSv] = useState("");
   const [titleEn, setTitleEn] = useState("");
-  const [matchNumber, setMatchNumber] = useState("");
-  const [matchTitle, setMatchTitle] = useState("");
+  const [predictionMatchId, setPredictionMatchId] = useState("");
   const [scheduledAt, setScheduledAt] = useState("");
   const [selectedQuestions, setSelectedQuestions] = useState<SelectedQuestion[]>(
     [],
   );
 
   const { data: bankQuestions } = api.question.listBank.useQuery();
+  const { data: tipsMatches } = api.tips.matchesList.useQuery();
+
+  const matchesByPuckDrop = useMemo(
+    () =>
+      [...(tipsMatches ?? [])].sort(
+        (a, b) =>
+          new Date(a.puckDropAt).getTime() - new Date(b.puckDropAt).getTime(),
+      ),
+    [tipsMatches],
+  );
+
+  const selectedMatch = matchesByPuckDrop.find(
+    (m) => m.id === predictionMatchId,
+  );
+  const selectedMatchNumber = selectedMatch
+    ? matchesByPuckDrop.findIndex((m) => m.id === selectedMatch.id) + 1
+    : null;
 
   const createMutation = api.quiz.create.useMutation({
     onSuccess: (quiz) => {
@@ -112,6 +142,15 @@ export default function NewQuizPage() {
     setSelectedQuestions([]);
   };
 
+  const handleMatchChange = (value: string | null) => {
+    const id = !value || value === NO_MATCH ? "" : value;
+    setPredictionMatchId(id);
+    const match = matchesByPuckDrop.find((m) => m.id === id);
+    if (match) {
+      setScheduledAt(toDatetimeLocalValue(new Date(match.puckDropAt)));
+    }
+  };
+
   const handleSubmit = (asDraft: boolean) => {
     if (!titleSv.trim() || selectedQuestions.length === 0) {
       toast.error("Title and at least one question required");
@@ -120,8 +159,7 @@ export default function NewQuizPage() {
     createMutation.mutate({
       titleSv: titleSv.trim(),
       titleEn: titleEn.trim() || undefined,
-      matchNumber: matchNumber ? Number(matchNumber) : undefined,
-      matchTitle: matchTitle.trim() || undefined,
+      predictionMatchId: predictionMatchId || undefined,
       scheduledAt: asDraft
         ? undefined
         : scheduledAt
@@ -149,24 +187,79 @@ export default function NewQuizPage() {
             <Label>{t("title")} (EN)</Label>
             <Input value={titleEn} onChange={(e) => setTitleEn(e.target.value)} />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>{t("matchNumber")}</Label>
-              <Input
-                type="number"
-                value={matchNumber}
-                onChange={(e) => setMatchNumber(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>{t("matchTitle")}</Label>
-              <Input
-                value={matchTitle}
-                onChange={(e) => setMatchTitle(e.target.value)}
-                placeholder="ÖIK – Björklöven"
-              />
-            </div>
+
+          <div className="space-y-2">
+            <Label>{t("linkedMatch")}</Label>
+            <p className="text-xs text-muted-foreground">{t("linkedMatchHint")}</p>
+            {matchesByPuckDrop.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                {t("noTipsMatches")}
+              </p>
+            ) : (
+              <Select
+                value={predictionMatchId || NO_MATCH}
+                onValueChange={handleMatchChange}
+              >
+                <SelectTrigger className="h-auto min-h-10 w-full py-2">
+                  <SelectValue placeholder={t("linkedMatch")}>
+                    {selectedMatch ? (
+                      <span className="flex items-center gap-2">
+                        <TeamCrest
+                          name={selectedMatch.homeTeam.name}
+                          logoUrl={selectedMatch.homeTeam.logoUrl}
+                          size="sm"
+                        />
+                        <span>
+                          {selectedMatch.homeTeam.shortName} vs{" "}
+                          {selectedMatch.awayTeam.shortName}
+                        </span>
+                        <TeamCrest
+                          name={selectedMatch.awayTeam.name}
+                          logoUrl={selectedMatch.awayTeam.logoUrl}
+                          size="sm"
+                        />
+                      </span>
+                    ) : (
+                      t("noLinkedMatch")
+                    )}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="w-(--anchor-width)">
+                  <SelectItem value={NO_MATCH}>{t("noLinkedMatch")}</SelectItem>
+                  {matchesByPuckDrop.map((m) => (
+                    <SelectItem key={m.id} value={m.id}>
+                      <span className="flex items-center gap-2">
+                        <TeamCrest
+                          name={m.homeTeam.name}
+                          logoUrl={m.homeTeam.logoUrl}
+                          size="sm"
+                        />
+                        <span className="font-medium">
+                          {m.homeTeam.shortName} vs {m.awayTeam.shortName}
+                        </span>
+                        <TeamCrest
+                          name={m.awayTeam.name}
+                          logoUrl={m.awayTeam.logoUrl}
+                          size="sm"
+                        />
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(m.puckDropAt).toLocaleString("sv-SE")}
+                        </span>
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            {selectedMatch && selectedMatchNumber != null && selectedMatchNumber > 0 ? (
+              <p className="text-xs text-muted-foreground">
+                {t("match")} {selectedMatchNumber} ·{" "}
+                {selectedMatch.homeTeam.shortName} –{" "}
+                {selectedMatch.awayTeam.shortName}
+              </p>
+            ) : null}
           </div>
+
           <div className="space-y-2">
             <Label>{t("scheduledAt")}</Label>
             <Input

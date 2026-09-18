@@ -296,6 +296,7 @@ export const quizRouter = createTRPCRouter({
       z.object({
         titleSv: z.string().min(1),
         titleEn: z.string().optional(),
+        predictionMatchId: z.string().optional(),
         matchNumber: z.number().int().positive().optional(),
         matchTitle: z.string().optional(),
         scheduledAt: z.date().optional(),
@@ -310,12 +311,33 @@ export const quizRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      let matchNumber = input.matchNumber;
+      let matchTitle = input.matchTitle;
+
+      if (input.predictionMatchId) {
+        const match = await ctx.db.predictionMatch.findUnique({
+          where: { id: input.predictionMatchId },
+          include: { homeTeam: true, awayTeam: true },
+        });
+        if (!match) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Match not found" });
+        }
+
+        const seasonMatches = await ctx.db.predictionMatch.findMany({
+          orderBy: { puckDropAt: "asc" },
+          select: { id: true },
+        });
+        const idx = seasonMatches.findIndex((m) => m.id === match.id);
+        matchNumber = idx >= 0 ? idx + 1 : matchNumber;
+        matchTitle = `${match.homeTeam.shortName} – ${match.awayTeam.shortName}`;
+      }
+
       return ctx.db.quiz.create({
         data: {
           titleSv: input.titleSv,
           titleEn: input.titleEn,
-          matchNumber: input.matchNumber,
-          matchTitle: input.matchTitle,
+          matchNumber,
+          matchTitle,
           scheduledAt: input.scheduledAt,
           status: input.scheduledAt ? "SCHEDULED" : "DRAFT",
           createdById: ctx.userId,
