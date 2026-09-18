@@ -44,7 +44,7 @@ export function ArenaClient({ slug }: { slug: string }) {
     <TipsScope className="flex min-h-svh flex-col p-8">
       <div className="grid flex-1 gap-10 lg:grid-cols-2 lg:items-center">
         <div className="tips-animate-reveal space-y-8">
-          <div className="flex justify-between">
+          <div className="flex justify-between relative">
             <h1 className="tips-display text-6xl leading-none md:text-7xl lg:text-8xl">
               {t("tipsScan")}
               <br />
@@ -52,25 +52,14 @@ export function ArenaClient({ slug }: { slug: string }) {
               <br />
               <span className="tips-ice-text">{t("tipsWin")}</span>
             </h1>
-            {presentedBy ? (
-              <div className="flex flex-col items-center gap-0">
-                <span className="tips-label text-(--tips-trophy-gold)!">
-                  {t("tipsPresentedBy")}
-                </span>
-                {presentedBy.logoUrl ? (
-                  <Image
-                    src={presentedBy.logoUrl}
-                    alt={presentedBy.name}
-                    width={400}
-                    height={400}
-                    className="w-88 h-auto object-contain"
-                  />
-                ) : (
-                  <span className="tips-display text-2xl tips-gold-text">
-                    {presentedBy.name}
-                  </span>
-                )}
-              </div>
+            {presentedBy?.logoUrl ? (
+              <Image
+                src={presentedBy.logoUrl}
+                alt={presentedBy.name}
+                width={400}
+                height={400}
+                className="w-120 h-auto object-contain absolute top-0 right-0"
+              />
             ) : null}
           </div>
 

@@ -65,9 +65,9 @@ export default function MatchDetailPage() {
               {t("tipsMobile")}
             </TipsButton>
           </Link>
-          <Link href="/tips/arena/live" target="_blank">
+          <Link href="/tips/jumbo" target="_blank">
             <TipsButton variant="secondary" size="sm">
-              {t("tipsArena")}
+              {t("tipsShowOnJumbotron")}
             </TipsButton>
           </Link>
           <Link href={`/tips/arena/${match.slug}/winner`} target="_blank">

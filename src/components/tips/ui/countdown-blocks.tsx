@@ -22,9 +22,12 @@ function diffParts(target: Date) {
 export function CountdownBlocks({
   target,
   className,
+  dense,
 }: {
   target: Date | string;
   className?: string;
+  /** Smaller blocks for fixed jumbotron layouts. */
+  dense?: boolean;
 }) {
   const { t } = useI18n();
   const end = useMemo(
@@ -51,12 +54,27 @@ export function CountdownBlocks({
       {blocks.map((b) => (
         <div
           key={b.label}
-          className="tips-glass flex min-w-17 flex-1 flex-col items-center px-2 py-3"
+          className={cn(
+            "tips-glass flex flex-1 flex-col items-center",
+            dense
+              ? "min-w-14 px-2 py-2"
+              : "min-w-17 px-2 py-3",
+          )}
         >
-          <span className="tips-display text-9xl tabular-nums text-[--tips-rink-white]">
+          <span
+            className={cn(
+              "tips-display tabular-nums text-[--tips-rink-white]",
+              dense ? "text-5xl" : "text-9xl",
+            )}
+          >
             {b.value}
           </span>
-          <span className="mt-1 text-[20px] font-bold tracking-[0.16em] text-[--tips-muted] uppercase">
+          <span
+            className={cn(
+              "font-bold tracking-[0.16em] text-[--tips-muted] uppercase",
+              dense ? "mt-0.5 text-[11px]" : "mt-1 text-[20px]",
+            )}
+          >
             {b.label}
           </span>
         </div>

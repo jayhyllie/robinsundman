@@ -67,9 +67,9 @@ export default function TipsAdminHomePage() {
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Link href="/tips/arena/live" target="_blank">
+              <Link href="/tips/jumbo" target="_blank">
                 <TipsButton variant="secondary" size="sm">
-                  {t("tipsArena")}
+                  {t("tipsShowOnJumbotron")}
                 </TipsButton>
               </Link>
               <Link href={`/admin/tips/matches/${open[0].id}`}>
