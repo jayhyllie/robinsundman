@@ -411,17 +411,16 @@ export default function JoinPage() {
       </TipsGlassCard>
 
       <div className="grid gap-4">
-        <CompanyLeaderboard
+        {seasonEntries.length > 0 && <CompanyLeaderboard
           title={t("businessClubLeague")}
           subtitle={
             seasonPeriod
               ? localized(locale, seasonPeriod.nameSv, seasonPeriod.nameEn)
               : undefined
           }
-          viewAllHref="/quiz/leaderboard"
           limit={5}
           entries={seasonEntries}
-        />
+        />}
       </div>
     </MobileShell>
   );
