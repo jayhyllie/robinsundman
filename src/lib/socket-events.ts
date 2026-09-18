@@ -70,6 +70,7 @@ export type FreeTextSubmission = {
 export const SOCKET_EVENTS = {
   JOIN_SESSION: "join_session",
   JOIN_ADMIN: "join_admin",
+  JOIN_DISPLAY: "join_display",
   SESSION_STATE: "session_state",
   PARTICIPANT_JOINED: "participant_joined",
   SUBMIT_ANSWER: "submit_answer",

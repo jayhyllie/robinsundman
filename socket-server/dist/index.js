@@ -453,6 +453,37 @@ io.on("connection", (socket) => {
             socket.emit("session_state", { ...state, seq: room.seq });
         }
     });
+    // Public jumbotron / lobby screen — receive player-facing session_state only.
+    socket.on("join_display", async (payload) => {
+        const parsed = z.object({ sessionId: z.string() }).safeParse(payload);
+        if (!parsed.success)
+            return;
+        const session = await prisma.quizSession.findUnique({
+            where: { id: parsed.data.sessionId },
+            select: { id: true, status: true },
+        });
+        if (!session || session.status === "COMPLETED") {
+            socket.emit("error", { message: "Session not available" });
+            return;
+        }
+        socket.join(`session:${parsed.data.sessionId}`);
+        socket.data.sessionId = parsed.data.sessionId;
+        socket.data.isDisplay = true;
+        const room = ensureRoom(parsed.data.sessionId);
+        room.seq += 1;
+        const state = await buildSessionState(parsed.data.sessionId, false);
+        if (!state)
+            return;
+        const playerState = {
+            ...state,
+            seq: room.seq,
+            correctOptionId: state.status === "QUESTION_REVEAL" ||
+                state.status === "FREE_TEXT_REVIEW"
+                ? state.correctOptionId
+                : null,
+        };
+        socket.emit("session_state", playerState);
+    });
     socket.on("submit_answer", async (payload) => {
         const parsed = z
             .object({

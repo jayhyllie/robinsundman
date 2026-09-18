@@ -17,10 +17,18 @@ export function useSocketSession(options: {
   sessionToken?: string;
   isAdmin?: boolean;
   adminSecret?: string;
+  /** Public display board — listen only, no participant/admin auth. */
+  watch?: boolean;
   enabled?: boolean;
 }) {
-  const { sessionId, sessionToken, isAdmin, adminSecret, enabled = true } =
-    options;
+  const {
+    sessionId,
+    sessionToken,
+    isAdmin,
+    adminSecret,
+    watch = false,
+    enabled = true,
+  } = options;
   const socketRef = useRef<Socket | null>(null);
   const lastSeqRef = useRef(0);
   const [connected, setConnected] = useState(false);
@@ -48,6 +56,8 @@ export function useSocketSession(options: {
         });
       } else if (sessionToken) {
         socket.emit(SOCKET_EVENTS.JOIN_SESSION, { sessionId, sessionToken });
+      } else if (watch) {
+        socket.emit(SOCKET_EVENTS.JOIN_DISPLAY, { sessionId });
       }
     });
 
@@ -74,7 +84,7 @@ export function useSocketSession(options: {
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [sessionId, sessionToken, isAdmin, adminSecret, enabled]);
+  }, [sessionId, sessionToken, isAdmin, adminSecret, watch, enabled]);
 
   const submitAnswer = (data: {
     quizQuestionId: string;
