@@ -7,9 +7,7 @@ import { JumboFrame } from "~/components/tips/jumbo-frame";
 import { useI18n } from "~/components/providers/i18n-provider";
 import {
   CountdownBlocks,
-  SponsorFooterLockup,
   TeamCrest,
-  TipsGlassCard,
 } from "~/components/tips/ui";
 import { api } from "~/trpc/react";
 
@@ -95,7 +93,7 @@ export function JumboArenaClient({ slug }: { slug: string }) {
           </p>
         </div>
 
-        <div className="flex h-full flex-col items-center justify-center gap-3 border-none bg-transparenttips-animate-reveal">
+        <div className="flex h-full flex-col items-center justify-center gap-3 border-none bg-transparent tips-animate-reveal">
             <QRCodeSVG value={joinUrl} size={380} level="M" />
           <p className="tips-label text-center text-[11px]!">
             {t("tipsScanToTip")}

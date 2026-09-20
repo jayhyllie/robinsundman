@@ -9,7 +9,6 @@ import {
   CountdownBlocks,
   SponsorFooterLockup,
   TeamCrest,
-  TipsBadge,
   TipsGlassCard,
 } from "~/components/tips/ui";
 import { api } from "~/trpc/react";

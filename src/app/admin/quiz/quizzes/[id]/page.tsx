@@ -3,11 +3,9 @@
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 
-import { QrDisplay } from "~/components/quiz/qr-display";
 import { useI18n } from "~/components/providers/i18n-provider";
 import { Badge } from "~/components/ui/badge";
 import { LinkButton } from "~/components/ui/link-button";
-import { Button } from "~/components/ui/button";
 import {
   Card,
   CardContent,
@@ -23,12 +21,6 @@ export default function QuizDetailPage() {
   const { t } = useI18n();
   const utils = api.useUtils();
   const { data: quiz } = api.quiz.getById.useQuery({ id: params.id });
-
-  const launchMutation = api.quiz.launchSession.useMutation({
-    onSuccess: (session) => {
-      window.location.href = `/admin/quiz/quizzes/${params.id}/host?session=${session.id}`;
-    },
-  });
 
   const timeLimitMutation = api.quiz.updateQuestionTimeLimit.useMutation({
     onSuccess: async () => {
@@ -49,9 +41,7 @@ export default function QuizDetailPage() {
 
   if (!quiz) return <p className="text-muted-foreground">{t("loading")}</p>;
 
-  const canEditTime =
-    quiz.status !== "COMPLETED";
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const canEditTime = quiz.status !== "COMPLETED";
 
   return (
     <div className="space-y-6">
@@ -61,11 +51,11 @@ export default function QuizDetailPage() {
           <Badge className="mt-2">{quiz.status}</Badge>
         </div>
         <div className="flex flex-wrap gap-2">
-          {latestSession && latestSession.status !== "COMPLETED" &&
+          {latestSession != null && latestSession.status !== "COMPLETED" && (
             <LinkButton href={`/admin/quiz/quizzes/${quiz.id}/host?session=${latestSession.id}`}>
               {t("hostPanel")}
             </LinkButton>
-          }
+          )}
           {hasFreeText && latestSession && (
             <LinkButton
               href={`/admin/quiz/quizzes/${quiz.id}/grading?session=${latestSession.id}`}

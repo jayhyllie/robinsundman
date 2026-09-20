@@ -14,7 +14,7 @@ import { AppTitle } from "~/components/ui/logo";
 import { api } from "~/trpc/react";
 
 export default function HomePage() {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const { homeBgImageUrl } = useBranding();
   const homeBg = homeBgImageUrl ?? "/images/quizhome.png";
   const utils = api.useUtils();

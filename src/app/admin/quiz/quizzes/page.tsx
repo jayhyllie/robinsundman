@@ -96,7 +96,7 @@ export default function AdminQuizzesPage() {
                         {t("launchQuiz")}
                       </Button>
                     }
-                    {latestSession && latestSession.status === "COMPLETED" &&
+                    {latestSession?.status === "COMPLETED" && (
                       <LinkButton
                         variant="outline"
                         size="sm"
@@ -104,8 +104,9 @@ export default function AdminQuizzesPage() {
                       >
                         {t("viewQuiz")}
                       </LinkButton>
-                    }
-                    {latestSession && latestSession.status !== "COMPLETED" &&
+                    )}
+                    {latestSession != null &&
+                      latestSession.status !== "COMPLETED" && (
                       <>
                         <LinkButton
                           variant="outline"
@@ -121,7 +122,7 @@ export default function AdminQuizzesPage() {
                           {t("hostPanel")}
                         </LinkButton>
                       </>
-                    }
+                    )}
                   </TableCell>
                 </TableRow>
               );

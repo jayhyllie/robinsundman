@@ -6,7 +6,6 @@ import { Users } from "lucide-react";
 import { toast } from "sonner";
 
 import { Leaderboard } from "~/components/quiz/leaderboard";
-import { QrDisplay } from "~/components/quiz/qr-display";
 import { useI18n } from "~/components/providers/i18n-provider";
 import { LinkButton } from "~/components/ui/link-button";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
@@ -68,7 +67,6 @@ export default function HostPanelClient() {
     enabled: !!sessionId && !!adminSecret,
   });
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   const joinCode = session?.joinCode ?? "";
   const currentIndex = state?.currentQuestionIndex ?? -1;
   const nextIndex = currentIndex + 1;
