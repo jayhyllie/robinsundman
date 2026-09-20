@@ -170,6 +170,7 @@ export const translations = {
     orEnterCode: "Eller öppna länken / skriv in koden på mobilen",
     openOnPhone: "Öppna anslutningssidan",
     questionsCount: "frågor",
+    viewQuiz: "Visa",
 
     // Tips / Prediction
     tipsPrediction: "Gissa",
@@ -515,6 +516,7 @@ export const translations = {
     orEnterCode: "Or open the link / enter the code on your phone",
     openOnPhone: "Open join page",
     questionsCount: "questions",
+    viewQuiz: "View",
 
     // Tips / Prediction
     tipsPrediction: "Prediction",

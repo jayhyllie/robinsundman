@@ -190,7 +190,6 @@ export default function HostPanelClient() {
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-center gap-4 sm:flex-row">
-              <QrDisplay url={`${appUrl}/quiz/join/${joinCode}`} size={120} />
               <div className="space-y-2 text-sm">
                 <p>
                   {t("question")}{" "}

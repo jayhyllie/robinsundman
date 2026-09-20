@@ -61,19 +61,11 @@ export default function QuizDetailPage() {
           <Badge className="mt-2">{quiz.status}</Badge>
         </div>
         <div className="flex flex-wrap gap-2">
-          {latestSession && latestSession.status !== "COMPLETED" ? (
+          {latestSession && latestSession.status !== "COMPLETED" &&
             <LinkButton href={`/admin/quiz/quizzes/${quiz.id}/host?session=${latestSession.id}`}>
               {t("hostPanel")}
             </LinkButton>
-          ) : (
-            <Button
-              className="bg-accent text-accent-foreground"
-              onClick={() => launchMutation.mutate({ quizId: quiz.id })}
-              disabled={launchMutation.isPending}
-            >
-              {t("launchQuiz")}
-            </Button>
-          )}
+          }
           {hasFreeText && latestSession && (
             <LinkButton
               href={`/admin/quiz/quizzes/${quiz.id}/grading?session=${latestSession.id}`}
@@ -147,25 +139,6 @@ export default function QuizDetailPage() {
           ))}
         </CardContent>
       </Card>
-
-      {latestSession && (
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("joinCode")}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold tracking-widest text-accent">
-                {latestSession.joinCode}
-              </p>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {appUrl}/quiz/join/{latestSession.joinCode}
-              </p>
-            </CardContent>
-          </Card>
-          <QrDisplay url={`${appUrl}/quiz/join/${latestSession.joinCode}`} />
-        </div>
-      )}
     </div>
   );
 }

@@ -85,31 +85,43 @@ export default function AdminQuizzesPage() {
                       : "-"}
                   </TableCell>
                   <TableCell className="text-right space-x-2">
-                    <LinkButton
-                      variant="outline"
-                      size="sm"
-                      href={`/admin/quiz/quizzes/${quiz.id}`}
-                    >
-                      {t("edit")}
-                    </LinkButton>
-                    {latestSession && latestSession.status !== "COMPLETED" ? (
-                      <LinkButton
-                        size="sm"
-                        href={`/admin/quiz/quizzes/${quiz.id}/host?session=${latestSession.id}`}
-                      >
-                        {t("hostPanel")}
-                      </LinkButton>
-                    ) : (
+                    {quiz.status === "DRAFT" || quiz.status === "SCHEDULED" &&
                       <Button
                         size="sm"
                         disabled={launchMutation.isPending}
                         onClick={() =>
-                          launchMutation.mutate({ quizId: quiz.id })
+                          launchMutation.mutate({ quizId: quiz.id }) 
                         }
                       >
                         {t("launchQuiz")}
                       </Button>
-                    )}
+                    }
+                    {latestSession && latestSession.status === "COMPLETED" &&
+                      <LinkButton
+                        variant="outline"
+                        size="sm"
+                        href={`/admin/quiz/quizzes/${quiz.id}`}
+                      >
+                        {t("viewQuiz")}
+                      </LinkButton>
+                    }
+                    {latestSession && latestSession.status !== "COMPLETED" &&
+                      <>
+                        <LinkButton
+                          variant="outline"
+                          size="sm"
+                          href={`/admin/quiz/quizzes/${quiz.id}`}
+                        >
+                          {t("edit")}
+                        </LinkButton>
+                        <LinkButton
+                          size="sm"
+                          href={`/admin/quiz/quizzes/${quiz.id}/host?session=${latestSession.id}`}
+                        >
+                          {t("hostPanel")}
+                        </LinkButton>
+                      </>
+                    }
                   </TableCell>
                 </TableRow>
               );

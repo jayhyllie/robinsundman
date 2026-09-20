@@ -16,7 +16,7 @@ export function QrDisplay({
 
   return (
     <TipsGlassCard className="flex flex-col items-center gap-4">
-      <div className="rounded-[var(--tips-radius-md)] bg-white p-4">
+      <div className="rounded-[--tips-radius-md] bg-white p-4">
         <QRCodeSVG value={url} size={size} />
       </div>
       <p className="tips-label text-center">{t("scanQr")}</p>
