@@ -32,6 +32,7 @@ export const translations = {
     quizStarted: "Quizet har startat",
     goodLuck: "Lycka till!",
     quizEnded: "Quizet är avslutat",
+    quizEndingSoon: "Avslutas automatiskt…",
     correct: "Rätt svar!",
     wrong: "Fel svar",
     timeUp: "Tiden är ute",
@@ -314,7 +315,7 @@ export const translations = {
     tipsConsentBody:
       "Godkänner du att vi använder din e-postadress för framtida nyhetsbrev och erbjudanden från klubben och partners? Du kan tippa oavsett vad du svarar.",
     tipsSending: "Skickar…",
-    tipsConsentYes: "Ja, jag vill gärna ha erbjudanden & nyhetsbrev",
+    tipsConsentYes: "Ja, det vill jag gärna!",
     tipsConsentNo: "Nej tack, bara gissa",
     tipsYoureIn: "Du är med",
     tipsPredictionLocked: "Gissningen är låst",
@@ -378,6 +379,7 @@ export const translations = {
     quizStarted: "Quiz has started",
     goodLuck: "Good luck!",
     quizEnded: "Quiz has ended",
+    quizEndingSoon: "Ending automatically…",
     correct: "Correct!",
     wrong: "Wrong answer",
     timeUp: "Time's up",
@@ -660,7 +662,7 @@ export const translations = {
     tipsConsentBody:
       "Do you agree that we use your email for future newsletters and offers from the club and partners? You can tip regardless of your answer.",
     tipsSending: "Sending…",
-    tipsConsentYes: "Yes, I want offers",
+    tipsConsentYes: "Yes, I would like that!",
     tipsConsentNo: "No, just guess",
     tipsYoureIn: "You're in",
     tipsPredictionLocked: "Prediction locked",

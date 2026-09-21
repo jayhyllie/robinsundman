@@ -20,6 +20,7 @@ const io = new Server(httpServer, {
     cors: { origin: CLIENT_URL, methods: ["GET", "POST"] },
 });
 const roomStates = new Map();
+const FINAL_REVEAL_MS = 3_000;
 function ensureRoom(sessionId) {
     const existing = roomStates.get(sessionId);
     if (existing)
@@ -28,6 +29,7 @@ function ensureRoom(sessionId) {
         sessionId,
         correctOptionId: null,
         revealTimer: null,
+        endTimer: null,
         seq: 0,
     };
     roomStates.set(sessionId, created);
@@ -401,6 +403,11 @@ async function revealQuestion(sessionId) {
         })));
     }
     await emitSessionState(sessionId);
+    // Last MCQ: let players see the reveal briefly, then auto-complete.
+    if (qq.question.type === "MULTIPLE_CHOICE" &&
+        isLastQuizQuestion(session.quiz.questions, qq)) {
+        scheduleAutoComplete(sessionId);
+    }
 }
 function scheduleReveal(sessionId, endsAt) {
     const room = ensureRoom(sessionId);
@@ -410,6 +417,53 @@ function scheduleReveal(sessionId, endsAt) {
     room.revealTimer = setTimeout(() => {
         void revealQuestion(sessionId);
     }, delay);
+}
+function clearRoomTimers(sessionId) {
+    const room = roomStates.get(sessionId);
+    if (!room)
+        return;
+    if (room.revealTimer) {
+        clearTimeout(room.revealTimer);
+        room.revealTimer = null;
+    }
+    if (room.endTimer) {
+        clearTimeout(room.endTimer);
+        room.endTimer = null;
+    }
+}
+async function completeQuiz(sessionId) {
+    clearRoomTimers(sessionId);
+    const session = await prisma.quizSession.findUnique({
+        where: { id: sessionId },
+    });
+    if (!session || session.status === "COMPLETED")
+        return;
+    await prisma.$transaction([
+        prisma.quizSession.update({
+            where: { id: sessionId },
+            data: { status: "COMPLETED", endedAt: new Date() },
+        }),
+        prisma.quiz.update({
+            where: { id: session.quizId },
+            data: { status: "COMPLETED" },
+        }),
+    ]);
+    await rebuildActiveLeaderboardsFromAnswers();
+    await emitSessionState(sessionId);
+}
+function scheduleAutoComplete(sessionId) {
+    const room = ensureRoom(sessionId);
+    if (room.endTimer)
+        clearTimeout(room.endTimer);
+    room.endTimer = setTimeout(() => {
+        void completeQuiz(sessionId);
+    }, FINAL_REVEAL_MS);
+}
+function isLastQuizQuestion(questions, current) {
+    if (questions.length === 0)
+        return false;
+    const lastOrder = Math.max(...questions.map((q) => q.order));
+    return current.order === lastOrder;
 }
 io.on("connection", (socket) => {
     socket.on("join_session", async (payload) => {
@@ -608,6 +662,10 @@ io.on("connection", (socket) => {
         const room = roomStates.get(parsed.data.sessionId);
         if (room?.revealTimer)
             clearTimeout(room.revealTimer);
+        if (room?.endTimer) {
+            clearTimeout(room.endTimer);
+            room.endTimer = null;
+        }
         await prisma.quizSession.update({
             where: { id: parsed.data.sessionId },
             data: {
@@ -627,14 +685,8 @@ io.on("connection", (socket) => {
             return;
         const qq = sessionWithQuiz.quiz.questions[parsed.data.questionIndex];
         if (!qq) {
-            await prisma.quizSession.update({
-                where: { id: parsed.data.sessionId },
-                data: { status: "COMPLETED", endedAt: new Date() },
-            });
-            await prisma.quiz.update({
-                where: { id: sessionWithQuiz.quizId },
-                data: { status: "COMPLETED" },
-            });
+            await completeQuiz(parsed.data.sessionId);
+            return;
         }
         else {
             const startedAt = new Date();
@@ -687,6 +739,20 @@ io.on("connection", (socket) => {
             data: { status: "QUESTION_REVEAL" },
         });
         await emitSessionState(parsed.data.sessionId);
+        const session = await prisma.quizSession.findUnique({
+            where: { id: parsed.data.sessionId },
+            include: {
+                quiz: { include: { questions: { orderBy: { order: "asc" } } } },
+            },
+        });
+        if (!session)
+            return;
+        const idx = session.currentQuestionIndex;
+        const current = session.quiz.questions.find((q) => q.order === idx) ??
+            session.quiz.questions[idx];
+        if (current && isLastQuizQuestion(session.quiz.questions, current)) {
+            scheduleAutoComplete(parsed.data.sessionId);
+        }
     });
     socket.on("end_quiz", async (payload) => {
         if (!socket.data.isAdmin)
@@ -694,25 +760,7 @@ io.on("connection", (socket) => {
         const parsed = z.object({ sessionId: z.string() }).safeParse(payload);
         if (!parsed.success)
             return;
-        const session = await prisma.quizSession.findUnique({
-            where: { id: parsed.data.sessionId },
-        });
-        if (!session)
-            return;
-        await prisma.$transaction([
-            prisma.quizSession.update({
-                where: { id: parsed.data.sessionId },
-                data: { status: "COMPLETED", endedAt: new Date() },
-            }),
-            prisma.quiz.update({
-                where: { id: session.quizId },
-                data: { status: "COMPLETED" },
-            }),
-        ]);
-        // Guarantee season/monthly boards reflect this quiz even if periods
-        // were missing when individual questions were revealed.
-        await rebuildActiveLeaderboardsFromAnswers();
-        await emitSessionState(parsed.data.sessionId);
+        await completeQuiz(parsed.data.sessionId);
     });
 });
 httpServer.listen(PORT, () => {

@@ -3,6 +3,10 @@ import { z } from "zod";
 import type { PrismaClient } from "@sundman/prisma";
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
+import {
+  ensureTodaysTipsMatchesOpen,
+  stockholmDayKey,
+} from "~/server/schedule-activation";
 
 const matchInclude = {
   homeTeam: true,
@@ -56,17 +60,6 @@ async function ensureLazyClose(
   return match.status;
 }
 
-const stockholmDay = new Intl.DateTimeFormat("en-CA", {
-  timeZone: "Europe/Stockholm",
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-});
-
-function dayKey(d: Date) {
-  return stockholmDay.format(d);
-}
-
 const ARENA_LIVE_PRIORITY: Record<string, number> = {
   OPEN: 0,
   CLOSED: 1,
@@ -89,14 +82,16 @@ async function findLiveMatch(
   db: PrismaClient,
   purpose: LiveMatchPurpose = "arena",
 ) {
+  await ensureTodaysTipsMatchesOpen(db);
+
   const matches = await db.predictionMatch.findMany({
     where: { status: { not: "DRAFT" } },
     include: matchInclude,
     orderBy: { puckDropAt: "asc" },
   });
 
-  const today = dayKey(new Date());
-  const todays = matches.filter((m) => dayKey(m.puckDropAt) === today);
+  const today = stockholmDayKey();
+  const todays = matches.filter((m) => stockholmDayKey(m.puckDropAt) === today);
   const priority =
     purpose === "winner" ? WINNER_LIVE_PRIORITY : ARENA_LIVE_PRIORITY;
 
@@ -135,6 +130,7 @@ export const tipsRouter = createTRPCRouter({
 
   /** Next upcoming (or just-started) non-draft match for homepage widget. */
   nextHomeMatch: publicProcedure.query(async ({ ctx }) => {
+    await ensureTodaysTipsMatchesOpen(ctx.db);
     const cutoff = new Date(Date.now() - 3 * 60 * 60 * 1000);
     return ctx.db.predictionMatch.findFirst({
       where: {
@@ -160,6 +156,7 @@ export const tipsRouter = createTRPCRouter({
   matchBySlug: publicProcedure
     .input(z.object({ slug: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
+      await ensureTodaysTipsMatchesOpen(ctx.db);
       const match = await ctx.db.predictionMatch.findUnique({
         where: { slug: input.slug },
         include: matchInclude,
@@ -174,6 +171,7 @@ export const tipsRouter = createTRPCRouter({
   publicStats: publicProcedure
     .input(z.object({ slug: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
+      await ensureTodaysTipsMatchesOpen(ctx.db);
       const match = await ctx.db.predictionMatch.findUnique({
         where: { slug: input.slug },
         select: {
@@ -311,6 +309,19 @@ export const tipsRouter = createTRPCRouter({
     return [...byEmail.values()];
   }),
 
+  /** Public check — skip consent UI if this email already opted in. */
+  hasMarketingConsent: publicProcedure
+    .input(z.object({ email: z.string().min(3).max(254) }))
+    .query(async ({ ctx, input }) => {
+      const email = normalizeEmail(input.email);
+      if (!email) return { consented: false };
+      const row = await ctx.db.matchPrediction.findFirst({
+        where: { email, marketingConsent: true },
+        select: { id: true },
+      });
+      return { consented: !!row };
+    }),
+
   // ── Teams ──────────────────────────────────────────────────────────────
   teamsList: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db.hockeyTeam.findMany({
@@ -438,6 +449,7 @@ export const tipsRouter = createTRPCRouter({
 
   // ── Matches ────────────────────────────────────────────────────────────
   matchesList: protectedProcedure.query(async ({ ctx }) => {
+    await ensureTodaysTipsMatchesOpen(ctx.db);
     const matches = await ctx.db.predictionMatch.findMany({
       include: matchInclude,
       orderBy: { puckDropAt: "desc" },

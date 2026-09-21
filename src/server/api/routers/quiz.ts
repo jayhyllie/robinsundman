@@ -6,6 +6,7 @@ import { generateJoinCode } from "~/lib/constants";
 import { COLOR_VALUE, HEX_COLOR, BORDER_RADIUS_VALUE } from "~/lib/branding-colors";
 import { applyFreeTextAwards } from "~/lib/free-text-grading";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
+import { ensureTodaysQuizzesLive } from "~/server/schedule-activation";
 
 export const companyRouter = createTRPCRouter({
   list: publicProcedure.query(async ({ ctx }) => {
@@ -245,6 +246,7 @@ export const questionRouter = createTRPCRouter({
 
 export const quizRouter = createTRPCRouter({
   getActive: publicProcedure.query(async ({ ctx }) => {
+    await ensureTodaysQuizzesLive(ctx.db);
     return ctx.db.quiz.findFirst({
       where: { status: "LIVE" },
       orderBy: { updatedAt: "desc" },
@@ -263,6 +265,7 @@ export const quizRouter = createTRPCRouter({
   }),
 
   list: protectedProcedure.query(async ({ ctx }) => {
+    await ensureTodaysQuizzesLive(ctx.db);
     return ctx.db.quiz.findMany({
       include: {
         questions: { include: { question: true } },

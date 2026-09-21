@@ -43,6 +43,7 @@ export function TipsMobileClient({ slug }: { slug: string }) {
     { refetchInterval: 5_000 },
   );
   const submit = api.tips.submitPrediction.useMutation();
+  const utils = api.useUtils();
 
   const [screen, setScreen] = useState<Screen>("landing");
   const [playerName, setPlayerName] = useState("");
@@ -51,6 +52,7 @@ export function TipsMobileClient({ slug }: { slug: string }) {
   const [awayGoals, setAwayGoals] = useState(2);
   const [stored, setStored] = useState<StoredPrediction | null>(null);
   const [consentOpen, setConsentOpen] = useState(false);
+  const [checkingConsent, setCheckingConsent] = useState(false);
 
   useEffect(() => {
     try {
@@ -114,7 +116,27 @@ export function TipsMobileClient({ slug }: { slug: string }) {
     playerName.trim().length >= 2 &&
     email.includes("@") &&
     email.includes(".") &&
-    !submit.isPending;
+    !submit.isPending &&
+    !checkingConsent;
+
+  async function handleSubmitClick() {
+    if (!canOpenConsent) return;
+    setCheckingConsent(true);
+    try {
+      const { consented } = await utils.tips.hasMarketingConsent.fetch({
+        email,
+      });
+      if (consented) {
+        await onSubmit(true);
+      } else {
+        setConsentOpen(true);
+      }
+    } catch {
+      setConsentOpen(true);
+    } finally {
+      setCheckingConsent(false);
+    }
+  }
 
   if (matchQuery.isLoading) {
     return (
@@ -279,9 +301,11 @@ export function TipsMobileClient({ slug }: { slug: string }) {
             size="lg"
             className="mt-auto w-full"
             disabled={!canOpenConsent}
-            onClick={() => setConsentOpen(true)}
+            onClick={() => void handleSubmitClick()}
           >
-            {t("tipsSubmitPrediction")}
+            {checkingConsent || submit.isPending
+              ? t("tipsSending")
+              : t("tipsSubmitPrediction")}
           </TipsButton>
         </div>
       ) : null}

@@ -59,7 +59,6 @@ export default function HostPanelClient() {
     startQuestion,
     nextQuestion,
     awardFreeText,
-    endQuiz,
   } = useSocketSession({
     sessionId,
     isAdmin: true,
@@ -79,9 +78,7 @@ export default function HostPanelClient() {
       return;
     }
 
-    if (nextIndex >= (state?.totalQuestions ?? 0)) {
-      endQuiz();
-    } else {
+    if (nextIndex < (state?.totalQuestions ?? 0)) {
       nextQuestion(nextIndex);
     }
   };
@@ -134,15 +131,21 @@ export default function HostPanelClient() {
             <Button onClick={() => startQuestion(0)}>{t("startQuiz")}</Button>
           )}
           {(state?.status === "QUESTION_REVEAL" ||
-            state?.status === "FREE_TEXT_REVIEW") && (
+            state?.status === "FREE_TEXT_REVIEW") &&
+            nextIndex < (state?.totalQuestions ?? 0) && (
             <Button
               onClick={handleNext}
               className="bg-accent text-accent-foreground"
             >
-              {nextIndex >= (state?.totalQuestions ?? 0)
-                ? t("endQuiz")
-                : t("nextQuestion")}
+              {t("nextQuestion")}
             </Button>
+          )}
+          {state?.status === "QUESTION_REVEAL" &&
+            nextIndex >= (state?.totalQuestions ?? 0) && (
+            <Badge variant="secondary">{t("quizEndingSoon")}</Badge>
+          )}
+          {state?.status === "COMPLETED" && (
+            <Badge variant="default">{t("quizEnded")}</Badge>
           )}
         </div>
       </div>
@@ -269,11 +272,11 @@ export default function HostPanelClient() {
               >
                 {t("awardPoints")}
               </Button>
-              <Button variant="outline" onClick={handleNext}>
-                {nextIndex >= (state?.totalQuestions ?? 0)
-                  ? t("endQuiz")
-                  : t("nextQuestion")}
-              </Button>
+              {nextIndex < (state?.totalQuestions ?? 0) ? (
+                <Button variant="outline" onClick={handleNext}>
+                  {t("nextQuestion")}
+                </Button>
+              ) : null}
             </div>
           </CardContent>
         </Card>
